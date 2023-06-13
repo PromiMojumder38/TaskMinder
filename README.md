@@ -5,6 +5,7 @@ The application is a to-do list manager that utilizes Node.js for the backend se
 * Database: MySQL or PostgreSQL
 * Apply Design Pattern
 * Use Postman Collector
+* Run query manually (Don't use ORM Library)
 
 **Functionality Requirements:**
 - user login with email and password
