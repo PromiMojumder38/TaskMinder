@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>To Do App Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <style>
+       body {
+        background: linear-gradient(to bottom right, #2f17ab, #20bdff, #2ed777); 
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 5px #4d5d65;
+  width: 400px;
+  height: 500px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+
+form input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+form input[type='text']{
+    margin-top: 30px;
+}
+
+form input[type="submit"] {
+    background-color: #09A6F3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    margin-top:30px;
+}
+
+.toggle-container {
+    text-align: center;
+}
+
+.toggle-button {
+    display: inline-block;
+    background-color: #629fbe;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.5 ease;
+}
+
+.toggle-button.active {
+    background-color: #09A6F3;
+}
+#registerForm {
+    display: none;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="toggle-container">
+            <div id="loginToggle" class="toggle-button active">Login</div>
+            <div id="registerToggle" class="toggle-button">Register</div>
+        </div>
+
+        <div id="loginForm">
+            <form>
+                <input type="text" placeholder="Username">
+                <input type="password" placeholder="Password">
+                <input type="submit" value="Login">
+            </form>
+        </div>
+
+        <div id="registerForm" style="display: none;">
+            <form>
+                <input type="text" placeholder="Username">
+                <input type="email" placeholder="Email">
+                <input type="password" placeholder="Password">
+                <input type="password" placeholder="Confirm Password">
+                <input type="submit" value="Register">
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', function() {
+    const loginToggle = document.getElementById('loginToggle');
+    const registerToggle = document.getElementById('registerToggle');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    loginToggle.addEventListener('click', function() {
+        loginToggle.classList.add('active');
+        registerToggle.classList.remove('active');
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    });
+
+    registerToggle.addEventListener('click', function() {
+        registerToggle.classList.add('active');
+        loginToggle.classList.remove('active');
+        registerForm.style.display = 'block';
+        loginForm.style.display = 'none';
+    });
+});
+
+    </script>
+</body>
+
+</html>
