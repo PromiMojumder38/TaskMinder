@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <style>
        body {
-        background: linear-gradient(to bottom right, #2f17ab, #20bdff, #2ed777); 
+        background: #86d6f5;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
@@ -16,7 +16,10 @@
 }
 
 .container {
-  background-color: #fff;
+  background-image: url("images/bg-login-form.png");
+  background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   border-radius: 18px;
   box-shadow: 0 2px 5px #4d5d65;
   width: 400px;
@@ -30,19 +33,26 @@ form input {
     display: block;
     width: 100%;
     padding: 10px;
+    margin-right: 30px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     font-size: 16px;
+    background-color: transparent;
+    border-bottom: 1px solid grey;
+border-top: none;
+border-right: none;
+border-left: none;
+
+
 }
 
 form input[type='text']{
     margin-top: 30px;
 }
 
+
 form input[type="submit"] {
     background-color: #09A6F3;
-    color: #fff;
+    color: #000;
     border: none;
     cursor: pointer;
     margin: 10px;
@@ -55,7 +65,6 @@ form input[type="submit"] {
 
 .toggle-button {
     display: inline-block;
-    background-color: #629fbe;
     color: #fff;
     padding: 10px 20px;
     cursor: pointer;
