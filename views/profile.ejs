@@ -15,8 +15,20 @@
 </head>
 
 <body>
-  <h1>Logout</h1>
-<p>You have been logged out successfully.</p>
+  <nav>
+    <h4>To Do App</h4>
+    <ul>
+        <li><a href="/Home">Home</a></li>
+        <li><a href="#" onclick="document.getElementById('logout-form').submit()">Logout</a></li>
+
+<form id="logout-form" action="/logout" method="post"></form>
+
+    </ul>
+</nav>
+  <h1>Welcome, <%= user.name %></h1>
+  <p>Email: <%= user.email %></p>
+
+  <!-- Add more user data as needed -->
 </body>
 
 </html>

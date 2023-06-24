@@ -3,17 +3,36 @@ const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const path = require('path');
+
 require('dotenv').config();
 
 const app = express();
-const port = 5001;
+const port = 3000;
+
+// Set the views directory and view engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+const sessionSecret = process.env.SESSION_SECRET || 'my_long_and_random_session_secret';
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: true
+  })
+);
 
 // Database configuration
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'to do app'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 // Connect to the database
@@ -25,29 +44,12 @@ db.connect((err) => {
   console.log('Connected to the database');
 });
 
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-const sessionSecret = process.env.SESSION_SECRET || 'my_long_and_random_session_secret';
-
-app.use(
-  session({
-    secret: sessionSecret,
-    resave: true,
-    saveUninitialized: true
-  })
-);
-
-
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
-
 // Custom middleware to require login
 const requireLogin = (req, res, next) => {
   if (req.session.userId) {
     next();
   } else {
-    res.redirect('/index.html');
+    res.redirect('/login');
   }
 };
 
@@ -142,7 +144,7 @@ app.post('/login', (req, res) => {
       if (result) {
         // Store the user ID in the session
         req.session.userId = user.id;
-        res.status(200).send('Login successful');
+        res.redirect('/profile');
       } else {
         res.status(401).send('Invalid email or password');
       }
@@ -150,6 +152,27 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Serve the profile page
+app.get('/profile', requireLogin, (req, res) => {
+  // Retrieve user data from the database
+  const userId = req.session.userId;
+  const query = 'SELECT * FROM user WHERE id = ?';
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error retrieving user data:', err);
+      res.status(500).send('Error retrieving user data');
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('User not found');
+      return;
+    }
+
+    const user = results[0];
+    res.render('profile', { user: user }); // Render the 'profile' view (profile.ejs) and pass the user data as a parameter
+  });
+});
 
 // Logout route
 app.post('/logout', requireLogin, (req, res) => {
@@ -160,14 +183,14 @@ app.post('/logout', requireLogin, (req, res) => {
       res.status(500).send('Error logging out');
       return;
     }
-    res.redirect('/logout.html');
+    res.sendFile(path.join(__dirname, 'public', 'logout.html'));
   });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).send('Something went wrong');
+  res.status(500).send('Something went wrong' + err.message);
 });
 
 // Start the server

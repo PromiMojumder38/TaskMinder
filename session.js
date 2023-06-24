@@ -1,15 +1,20 @@
-// session.js
-
 // Custom middleware to require login
 const requireLogin = (req, res, next) => {
-    if (req.session.userId) {
+  const token = req.headers['authorization'];
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded.user;
       next();
-    } else {
-      res.redirect('/login.html');
+    } catch (error) {
+      res.redirect('/index.html');
     }
-  };
-  
-  module.exports = {
-    requireLogin
-  };
-  
+  } else {
+    res.redirect('/index.html');
+  }
+};
+
+module.exports = {
+  requireLogin
+};
