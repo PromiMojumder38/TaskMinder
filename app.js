@@ -2,29 +2,18 @@ const express = require('express');
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const path = require('path');
-
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
-const port = 5000;
-
-// Set the view engine
-app.set('view engine', 'ejs');
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+const port = 5001;
 
 // Database configuration
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'to do app'
 });
 
 // Connect to the database
@@ -35,24 +24,32 @@ db.connect((err) => {
   }
   console.log('Connected to the database');
 });
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+const sessionSecret = process.env.SESSION_SECRET || 'my_long_and_random_session_secret';
+
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
 // Custom middleware to require login
 const requireLogin = (req, res, next) => {
-  const token = req.headers['authorization'];
-  console.log('token ' + token);
-
-  if (!token) {
-    return res.redirect('/login');
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
+  if (req.session.userId) {
     next();
-  } catch (error) {
-    return res.redirect('/login');
+  } else {
+    res.redirect('/index.html');
   }
 };
-
 
 // Register route
 app.post('/register', (req, res) => {
@@ -143,54 +140,14 @@ app.post('/login', (req, res) => {
       }
 
       if (result) {
-        // Generate JWT token
-        const token = jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET);
-
-        // Set the token as a cookie
-        res.cookie('token', token, { httpOnly: true });
-
-        // Redirect to the profile page
-        res.redirect('/profile');
+        // Store the user ID in the session
+        req.session.userId = user.id;
+        res.status(200).send('Login successful');
       } else {
         res.status(401).send('Invalid email or password');
       }
     });
   });
-});
-
-// Profile route
-app.get('/profile', requireLogin, (req, res) => {
-  // Verify the token and extract the user ID
-  const token = req.cookies.token;
-  if (!token) {
-    res.redirect('/login');
-    return;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.user.id;
-
-    // Retrieve user data from the database
-    const query = 'SELECT * FROM user WHERE id = ?';
-    db.query(query, [userId], (err, results) => {
-      if (err) {
-        console.error('Error retrieving user data:', err);
-        res.status(500).send('Error retrieving user data');
-        return;
-      }
-
-      if (results.length === 0) {
-        res.status(404).send('User not found');
-        return;
-      }
-
-      const user = results[0];
-      res.render('profile', { user: user }); // Render the 'profile' view (profile.ejs) and pass the user data as a parameter
-    });
-  } catch (error) {
-    res.redirect('/login');
-  }
 });
 
 
@@ -203,19 +160,17 @@ app.post('/logout', requireLogin, (req, res) => {
       res.status(500).send('Error logging out');
       return;
     }
-    res.sendFile(path.join(__dirname, 'public', 'logout.html'));
+    res.redirect('/logout.html');
   });
 });
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).send('Something went wrong' + err.message);
+  res.status(500).send('Something went wrong');
 });
 
 // Start the server
-  app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
