@@ -181,7 +181,7 @@ button{
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('../../images/bg-login-form.png');
+    background-image: url('bg-login-form.png');
     filter: blur(0px);
     background-size: cover;
     z-index: -1;
