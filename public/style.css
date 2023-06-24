@@ -13,7 +13,7 @@
 
 body {
     height: 100vh;
-    background: #a5b6ab;
+    background: #f4eb9f;
     display: grid;
     place-content: center;
     font-family: 'Poppins', sans-serif;
@@ -156,7 +156,7 @@ button{
     cursor: pointer;
     position: absolute;
     left:50%;
-    top:304px;
+    top:264px;
     transform: translateX(-50%);
     width:143.67px;
     height:40px;
@@ -219,6 +219,7 @@ p{
 .overlay-panel button{
     border:none;
     background-color: transparent;
+    margin-top: 220px;
 }
 .right-panel-active .overlay-container{
     transform: translateX(-150%);
@@ -276,10 +277,11 @@ footer {
 footer mark {
     padding: 8px 30px;
     border-radius: 7px;
+    background-color: transparent;
+    color: #736f6f;
 }
 footer a {
     text-decoration: none;
     font-size: 18px;
     font-weight: bold;
-    color: #003;
 }
