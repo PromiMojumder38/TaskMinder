@@ -4,11 +4,12 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const cookieParser = require('cookie-parser'); // Import the cookie-parser middleware
 
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Set the views directory and view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +19,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser()); // Add the cookie-parser middleware
 
 // Database configuration
 const db = mysql.createConnection({
@@ -84,7 +86,13 @@ app.post('/register', (req, res) => {
           return;
         }
         console.log('User registered:', result);
+
+        // Generate a JWT token
+        const token = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Return the token in the response
         res.status(200).send('User registered successfully');
+        res.status(200).json({ token: token });
       });
     });
   });
@@ -137,6 +145,12 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Logout route
+app.post('/logout', authenticateToken, (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/login');
+});
+
 // Profile route
 app.get('/profile', (req, res) => {
   const token = req.query.token;
@@ -152,35 +166,38 @@ app.get('/profile', (req, res) => {
     const userId = decoded.userId;
 
     // Retrieve user data from the database
-    const query = 'SELECT * FROM user WHERE id = ?';
-    db.query(query, [userId], (err, results) => {
+    const userQuery = 'SELECT * FROM user WHERE id = ?';
+    db.query(userQuery, [userId], (err, userResults) => {
       if (err) {
         console.error('Error retrieving user data:', err);
         res.status(500).send('Error retrieving user data');
         return;
       }
 
-      if (results.length === 0) {
+      if (userResults.length === 0) {
         res.status(404).send('User not found');
         return;
       }
 
-      const user = results[0];
-      res.render('profile', { user: user }); // Render the 'profile' view (profile.ejs) and pass the user data as a parameter
+      const user = userResults[0];
+
+      // Retrieve tasks for the user from the database
+      const tasksQuery = 'SELECT * FROM tasks WHERE user_id = ?';
+      db.query(tasksQuery, [userId], (err, tasksResults) => {
+        if (err) {
+          console.error('Error retrieving tasks:', err);
+          res.status(500).send('Error retrieving tasks');
+          return;
+        }
+
+        res.render('profile', { user: user, tasks: tasksResults }); // Render the 'profile' view (profile.ejs) and pass the user and tasks data as parameters
+      });
     });
   } catch (error) {
     console.error('Error verifying token:', error);
     res.status(401).send('Unauthorized');
   }
 });
-
-
-// Logout route
-app.post('/logout', authenticateToken, (req, res) => {
-  res.clearCookie('token');
-  res.status(200).json({ message: 'Logout successful' });
-});
-
 
 // Middleware to authenticate the JWT token
 function authenticateToken(req, res, next) {
@@ -192,14 +209,14 @@ function authenticateToken(req, res, next) {
     return;
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       console.error('Error verifying token:', err);
       res.status(403).send('Invalid token');
       return;
     }
 
-    req.user = user;
+    req.user = decoded;
     next();
   });
 }
@@ -207,7 +224,7 @@ function authenticateToken(req, res, next) {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).send('Something went wrong' + err.message);
+  res.status(500).send('Something went wrong');
 });
 
 // Start the server

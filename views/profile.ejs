@@ -1,35 +1,94 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMinder</title>
     <link rel="icon" type="image/x-icon" href="logo_final.png">
-    <link rel = "stylesheet" href = "/style.css">
-    <link rel = "stylesheet" href = "https://use.fontawesome.com/releases/v5.0.7/css/all.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
- <meta http-equiv="X-UA-Compatible" content = "IE=edge">
+    <link rel="stylesheet" href="/task.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-     <!--boxicons-->
+    <!--boxicons-->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <body>
-  <nav>
+<nav>
     <h4>To Do App</h4>
     <ul>
-        <li><a href="/Home">Home</a></li>
         <li><a href="#" onclick="document.getElementById('logout-form').submit()">Logout</a></li>
-
-<form id="logout-form" action="/logout" method="post"></form>
-
+        <li><a href="/tasks/add">Add Task</a></li>
+        <li>Welcome, <%= user.name %></li>
     </ul>
-</nav>
-  <h1>Welcome, <%= user.name %></h1>
-  <p>Email: <%= user.email %></p>
 
-  <!-- Add more user data as needed -->
+    <form id="logout-form" action="/logout" method="post"></form>
+</nav>
+<!-- Task List -->
+<section>
+  <h2>Task List</h2>
+  <% if (tasks.length > 0) { %>
+  <ul class="task-list">
+      <% tasks.forEach(function(task) { %>
+      <li>
+          <div class="task-box">
+            <div class="task-details">
+              <div class="task-heading">
+                <h3><%= task.task_name %></h3>
+            </div>
+            <div class="task-info">
+                <% if (task.task_description) { %>
+                <p><%= task.task_description %></p>
+                <% } %>
+                <p>Created: <%= task.task_createdAt %></p>
+              <p>Updated: <%= task.task_updatedAt %></p>
+            </div>
+          </div>
+              <div class="task-actions">
+                  <div class="dropdown">
+                      <button class="dropdown-toggle" type="button">
+                          <i class="fas fa-ellipsis-v"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                          <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit">Update</a>
+                          <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete">Delete</a>
+              
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </li>
+      <% }) %>
+  </ul>
+  <% } else { %>
+  <p>No tasks found.</p>
+  <% } %>
+</section>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module">
+  $(document).ready(function() {
+    // Show/hide the dropdown menu when the three-dot icon is clicked
+    $('.dropdown-toggle').click(function(e) {
+      e.stopPropagation();
+      $(this).siblings('.dropdown-menu').toggle();
+    });
+  
+    // Hide the dropdown menu when clicking anywhere outside it
+    $(document).click(function() {
+      $('.dropdown-menu').hide();
+    });
+    
+    // Prevent hiding the dropdown menu when clicking inside it
+    $('.dropdown-menu').click(function(e) {
+      e.stopPropagation();
+    });
+  });
+  </script>
+  
+
 </body>
 
 </html>
-

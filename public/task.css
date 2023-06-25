@@ -1,0 +1,133 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+  
+  nav h4 {
+    margin: 0;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  nav ul li a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  h1 {
+    margin-top: 20px;
+  }
+  
+  /* task.css */
+
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin-left: 40px;
+    margin-right: 40px;
+    
+  }
+  .task-list ul{
+    margin-bottom: 20px;
+  }
+  .task-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f8f8f8;
+  }
+  
+  /* Add the following CSS styles */
+.task-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .task-heading {
+    flex: 1;
+  }
+  
+  .task-info {
+    flex: 3;
+  }
+  
+  .task-actions {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .task-details h3 {
+    margin: 0;
+  }
+  
+  .task-details p {
+    margin: 5px 0;
+    font-size: 12px;
+    color: #999;
+  }
+  
+  .task-actions .dropdown {
+    position: relative;
+  }
+  
+  .task-actions .dropdown-toggle {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .task-actions .dropdown-toggle:focus {
+    outline: none;
+  }
+  
+  .task-actions .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 120px;
+    padding: 5px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-left: -90px;
+  }
+  
+  .task-actions .dropdown-item {
+    display: block;
+    padding: 5px 15px;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .task-actions .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }

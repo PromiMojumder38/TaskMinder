@@ -1,20 +1,19 @@
 const jwt = require('jsonwebtoken');
 
-const requireLogin = (req, res, next) => {
+function requireLogin(req, res, next) {
   const token = req.headers['authorization'];
 
   if (token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded.user;
+      jwt.verify(token, process.env.JWT_SECRET);
       next();
     } catch (error) {
-      res.redirect('/index.html');
+      res.status(401).send('Unauthorized');
     }
   } else {
-    res.redirect('/index.html');
+    res.status(401).send('Unauthorized');
   }
-};
+}
 
 module.exports = {
   requireLogin
