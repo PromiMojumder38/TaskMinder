@@ -1,4 +1,5 @@
-// Custom middleware to require login
+const jwt = require('jsonwebtoken');
+
 const requireLogin = (req, res, next) => {
   const token = req.headers['authorization'];
 

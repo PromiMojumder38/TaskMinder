@@ -2,7 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
 const path = require('path');
 
 require('dotenv').config();
@@ -17,15 +17,7 @@ app.set('view engine', 'ejs');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const sessionSecret = process.env.SESSION_SECRET || 'my_long_and_random_session_secret';
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(
-  session({
-    secret: sessionSecret,
-    resave: true,
-    saveUninitialized: true
-  })
-);
 
 // Database configuration
 const db = mysql.createConnection({
@@ -43,15 +35,6 @@ db.connect((err) => {
   }
   console.log('Connected to the database');
 });
-
-// Custom middleware to require login
-const requireLogin = (req, res, next) => {
-  if (req.session.userId) {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-};
 
 // Register route
 app.post('/register', (req, res) => {
@@ -142,9 +125,11 @@ app.post('/login', (req, res) => {
       }
 
       if (result) {
-        // Store the user ID in the session
-        req.session.userId = user.id;
-        res.redirect('/profile');
+        // Generate a JWT token
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Redirect to the profile page with the token as a query parameter
+        res.redirect(`/profile?token=${token}`);
       } else {
         res.status(401).send('Invalid email or password');
       }
@@ -152,40 +137,72 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Serve the profile page
-app.get('/profile', requireLogin, (req, res) => {
-  // Retrieve user data from the database
-  const userId = req.session.userId;
-  const query = 'SELECT * FROM user WHERE id = ?';
-  db.query(query, [userId], (err, results) => {
-    if (err) {
-      console.error('Error retrieving user data:', err);
-      res.status(500).send('Error retrieving user data');
-      return;
-    }
+// Profile route
+app.get('/profile', (req, res) => {
+  const token = req.query.token;
 
-    if (results.length === 0) {
-      res.status(404).send('User not found');
-      return;
-    }
+  if (!token) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
 
-    const user = results[0];
-    res.render('profile', { user: user }); // Render the 'profile' view (profile.ejs) and pass the user data as a parameter
-  });
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    // Retrieve user data from the database
+    const query = 'SELECT * FROM user WHERE id = ?';
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Error retrieving user data:', err);
+        res.status(500).send('Error retrieving user data');
+        return;
+      }
+
+      if (results.length === 0) {
+        res.status(404).send('User not found');
+        return;
+      }
+
+      const user = results[0];
+      res.render('profile', { user: user }); // Render the 'profile' view (profile.ejs) and pass the user data as a parameter
+    });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.status(401).send('Unauthorized');
+  }
 });
+
 
 // Logout route
-app.post('/logout', requireLogin, (req, res) => {
-  // Destroy the session
-  req.session.destroy((err) => {
+app.post('/logout', authenticateToken, (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logout successful' });
+});
+
+
+// Middleware to authenticate the JWT token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      console.error('Error logging out:', err);
-      res.status(500).send('Error logging out');
+      console.error('Error verifying token:', err);
+      res.status(403).send('Invalid token');
       return;
     }
-    res.sendFile(path.join(__dirname, 'public', 'logout.html'));
+
+    req.user = user;
+    next();
   });
-});
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
