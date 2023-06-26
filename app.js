@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser'); // Import the cookie-parser middl
 require('dotenv').config();
 
 const app = express();
-const port = 3001;
+const port = 3301;
 
 // Set the views directory and view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -197,6 +197,139 @@ app.get('/profile', (req, res) => {
     console.error('Error verifying token:', error);
     res.status(401).send('Unauthorized');
   }
+});
+
+app.get('/tasks', authenticateToken, (req, res) => {
+  // Fetch tasks from the database
+  db.query('SELECT * FROM tasks', (err, results) => {
+    if (err) {
+      console.error('Error fetching tasks:', err);
+      res.status(500).send('Error fetching tasks');
+      return;
+    }
+
+    const tasks = results.map((task) => ({
+      task_id: task.task_id,
+      task_name: task.task_name,
+      task_description: task.task_description,
+      task_createdAt: new Date(task.created_at)
+    }));
+
+    res.render('index', { tasks });
+  });
+});
+
+
+
+// Update task route
+app.get('/tasks/:taskId/edit', authenticateToken, (req, res) => {
+  const taskId = req.params.taskId;
+
+  // Retrieve task from the database
+  const taskQuery = 'SELECT * FROM tasks WHERE task_id = ?';
+  db.query(taskQuery, [taskId], (err, taskResults) => {
+    if (err) {
+      console.error('Error retrieving task:', err);
+      res.status(500).send('Error retrieving task');
+      return;
+    }
+
+    if (taskResults.length === 0) {
+      res.status(404).send('Task not found');
+      return;
+    }
+
+    const task = taskResults[0];
+
+    res.render('edit-task', { task: task }); // Render the 'edit-task' view (edit-task.ejs) and pass the task data as a parameter
+  });
+});
+
+// Update task route - POST request
+app.post('/tasks/:taskId/edit', authenticateToken, (req, res) => {
+  const taskId = req.params.taskId;
+  const { task_name, task_description } = req.body;
+
+  // Update task in the database
+  const updateQuery = 'UPDATE tasks SET task_name = ?, task_description = ? WHERE task_id = ?';
+  db.query(updateQuery, [task_name, task_description, taskId], (err, result) => {
+    if (err) {
+      console.error('Error updating task:', err);
+      res.status(500).send('Error updating task');
+      return;
+    }
+
+    res.redirect('/profile'); // Redirect back to the profile page
+  });
+});
+
+// Delete task route
+app.get('/tasks/:taskId/delete', authenticateToken, (req, res) => {
+  const taskId = req.params.taskId;
+
+  // Delete task from the database
+  const deleteQuery = 'DELETE FROM tasks WHERE task_id = ?';
+  db.query(deleteQuery, [taskId], (err, result) => {
+    if (err) {
+      console.error('Error deleting task:', err);
+      res.status(500).send('Error deleting task');
+      return;
+    }
+
+    res.redirect('/profile'); // Redirect back to the profile page
+  });
+});
+
+// Add task route - GET request
+app.get('/tasks/add', authenticateToken, (req, res) => {
+  res.render('add-task'); // Render the 'add-task' view (add-task.ejs)
+});
+
+// Add task route - POST request
+app.post('/tasks/add', authenticateToken, (req, res) => {
+  const { task_name, task_description } = req.body;
+
+  // Get the user ID from the token
+  const token = req.cookies.token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.userId;
+
+  // Insert task into the database
+  const insertQuery = 'INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)';
+  db.query(insertQuery, [task_name, task_description, userId], (err, result) => {
+    if (err) {
+      console.error('Error adding task:', err);
+      res.status(500).send('Error adding task');
+      return;
+    }
+
+    res.redirect('/profile'); // Redirect back to the profile page
+  });
+});
+
+// ...
+
+
+// Save task route
+app.post('/tasks', authenticateToken, (req, res) => {
+  const { task_name, task_description } = req.body;
+
+  // Get the user ID from the token
+  const token = req.cookies.token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.userId;
+
+  // Insert task into the database
+  const insertQuery = 'INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)';
+  db.query(insertQuery, [task_name, task_description, userId], (err, result) => {
+    if (err) {
+      console.error('Error adding task:', err);
+      res.status(500).send('Error adding task');
+      return;
+    }
+
+    res.redirect('/profile'); // Redirect back to the profile page
+  });
 });
 
 // Middleware to authenticate the JWT token

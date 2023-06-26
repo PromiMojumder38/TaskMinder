@@ -1,133 +1,139 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-  }
-  
-  nav h4 {
-    margin: 0;
-  }
-  
-  nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav ul li {
-    display: inline-block;
-    margin-right: 10px;
-  }
-  
-  nav ul li a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  h1 {
-    margin-top: 20px;
-  }
-  
-  /* task.css */
+  font-family: cursive;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+animation: handwriting 2s linear;
+  margin: 0;
+  padding: 0;
+  background-color: #f4eb9f;
+}
+@keyframes handwriting {
+from {
+opacity: 0;
+}
+to {
+opacity: 1;
+}
+}
+nav {
+  padding: 10px;
+  height: 70px;
+  box-shadow: 15px 10px 15px rgba(126, 118, 118, 0.467);
+}
+nav img{
+height:90px;
+width:100px;
+float: left;
+}
+
+nav h4 {
+  margin: 0;
+  float: left;
+  font-size: 32px;
+  padding-top: 10px;
+}
+nav h4:hover{
+transition: 0.5s ease;
+transform:scale(1.05);
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 1.3rem;
+}
+
+nav ul li a{
+  color:#000;
+display: block;
+padding: 0 15px;
+padding-left: 50px;
+line-height: 70px;
+font-size: 17px;
+transition: .5s;
+text-decoration: none;
+font-size: 1.3rem;
+}
+
+nav ul li a:hover{
+text-decoration: underline rgb(189, 13, 48) 3px;
+transition: 0.5s ease;
+text-decoration-skip-ink: auto;
+text-underline-position: under;
+text-underline-offset: 5px;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+/* task.css */
 
 .task-list {
-    list-style: none;
-    padding: 0;
-    margin-left: 40px;
-    margin-right: 40px;
-    
-  }
-  .task-list ul{
-    margin-bottom: 20px;
-  }
-  .task-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f8f8f8;
-  }
-  
-  /* Add the following CSS styles */
+  list-style-type: none;
+  padding: 0;
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
+.task-box {
+display: flex;
+align-items: center;
+box-shadow: 3px 3px 5px #5557;
+padding: 10px;
+margin-bottom: 30px;
+height: 220px;
+width: 600px;
+}
+
+.task-logo {
+  width: 200px;
+  height: 200px;
+  margin-right: 10px;
+}
+.task-logo img{
+  width: 200px;
+  height: 200px;
+}
+
 .task-details {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .task-heading {
-    flex: 1;
-  }
-  
-  .task-info {
-    flex: 3;
-  }
-  
-  .task-actions {
-    flex: 1;
-    text-align: right;
-  }
-  
-  .task-details h3 {
-    margin: 0;
-  }
-  
-  .task-details p {
-    margin: 5px 0;
-    font-size: 12px;
-    color: #999;
-  }
-  
-  .task-actions .dropdown {
-    position: relative;
-  }
-  
-  .task-actions .dropdown-toggle {
-    background: none;
-    border: none;
-    color: #999;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  
-  .task-actions .dropdown-toggle:focus {
-    outline: none;
-  }
-  
-  .task-actions .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 120px;
-    padding: 5px 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-left: -90px;
-  }
-  
-  .task-actions .dropdown-item {
-    display: block;
-    padding: 5px 15px;
-    color: #333;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .task-actions .dropdown-item:hover {
-    background-color: #f0f0f0;
-  }
+  flex: 1;
+}
+
+.task-info {
+  float: right;
+}
+.task-info h3{
+  font-size: 1.6rem;
+}
+.task-info p{
+  font-size: 1rem;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 30px;
+}
+
+.dropdown-menu {
+  display: none;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #333;
+  margin: 20px;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f3e781;
+}
