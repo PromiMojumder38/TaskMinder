@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskMinder</title>
-  <link rel = "stylesheet" href = "task.css">
+  <link rel="stylesheet" href="task.css">
   <link rel="icon" type="image/x-icon" href="logo_final.png">
-
  
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -25,63 +24,64 @@
     </ul>
     <form id="logout-form" action="/logout" method="post"></form>
   </nav>
-  <!-- Task List -->
-  <section>
-    <% if (tasks.length > 0) { %>
-    <ul class="task-list">
-      <% tasks.forEach(function(task) { %>
-      <li>
-        <div class="task-box">
-          <div class="task-details">
-            <div class="task-info">
-              <h3><%= task.task_name %></h3>
-              <% if (task.task_description) { %>
-              <p><%= task.task_description %></p>
-              <% } %>
-              <p>Time: <%= task.task_createdAt.toLocaleTimeString() %>, <%= task.task_createdAt.toLocaleDateString("en-US", { weekday: 'long' }) %>, <%= task.task_createdAt.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
-            </div>
-            <div class="task-logo">
-              <img src="/logo_final.png" alt="Task Logo">
-            </div>
-          </div>
-          <div class="task-actions">
-            <div class="dropdown">
-              <button class="dropdown-toggle" type="button">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit">Update</a>
-                <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete">Delete</a>
+
+  <div class="container">
+    <div class="left-side">
+      <div class="icons">
+        <!-- Add your icons here -->
+      </div>
+      <h1>Task List</h1>
+    </div>
+
+    <div class="middle-box">
+      <section>
+        <% if (tasks.length > 0) { %>
+        <ul class="task-list">
+          <% tasks.forEach(function(task) { %>
+          <li>
+            <div class="task-box">
+                <div class="task-info">
+                  <h3><%= task.task_name %></h3>
+                  <% if (task.task_description) { %>
+                  <p><%= task.task_description %></p>
+                  <% } %>
+                  <p>Last edited: <%= task.task_createdAt.toLocaleTimeString() %>, <%= task.task_createdAt.toLocaleDateString("en-US", { weekday: 'long' }) %>, <%= task.task_createdAt.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+              </div>
+              <div class="task-actions">
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit">Update</a>
+                    <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete">Delete</a>
+                </div>
               </div>
             </div>
-          </div>
+          </li>
+          <% }) %>
+        </ul>
+        <% } else { %>
+        <p>No tasks found.</p>
+        <% } %>
+      </section>
+    </div>
+
+    <div class="right-side">
+      <div class="user-info">
+        <div class="user-logo">
+          <img src="only logo.png" alt="User Logo">
         </div>
-      </li>
-      <% }) %>
-    </ul>
-    <% } else { %>
-    <p>No tasks found.</p>
-    <% } %>
-  </section>
+        <div class="user-details">
+          <h4><%= user.name %></h4>
+          <p><%= user.email %></p>
+        </div>
+      </div>
+      <div class="welcome-text">
+        <p>Welcome to TaskMinder!</p>
+      </div>
+    </div>
+    </div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="module">
-    $(document).ready(function() {
-      // Show/hide the dropdown menu when the three-dot icon is clicked
-      $('.dropdown-toggle').click(function(e) {
-        e.stopPropagation();
-        $(this).siblings('.dropdown-menu').toggle();
-      });
     
-      // Hide the dropdown menu when clicking anywhere outside it
-      $(document).click(function() {
-        $('.dropdown-menu').hide();
-      });
-      
-      // Prevent hiding the dropdown menu when clicking inside it
-      $('.dropdown-menu').click(function(e) {
-        e.stopPropagation();
-      });
-    });
   </script>
 </body>
 </html>

@@ -16,7 +16,7 @@
 
 <body>
 
-<div class="container" id="container">
+  <div class="container" id="container">
     <div class="form-container sign-up-container">
         <form action="/register" method="POST">
           <h1>Create a New Account</h1>
@@ -50,22 +50,21 @@
         </form>
       </div>
       
-      
-        <div class="overlay-container" id="overlayCon">
+      <div class="overlay-container" id="overlayCon">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
                     <div class="background-image"></div>
-                    <button>Sign In</button>
+                    <button class="ghost" id="signIn">Sign In</button>
                 </div>
                 <div class="overlay-panel overlay-right">
                     <div class="background-image"></div>
-                    <button>Sign Up</button>
+                    <button class="ghost" id="signUp">Sign Up</button>
                 </div>
             </div>
-            <button id="overlayBtn"></button>
+            <button class="close" id="overlayBtn"><i class="fas fa-times"></i></button>
         </div>
-    </div>
-   
+</div>
+
 <footer>
         <mark>Learn more on <a href="https://github.com/PromiMojumder38/To-Do-App">&nbspGithub</a></mark>
     </footer>

@@ -18,37 +18,12 @@ body {
     place-content: center;
     font-family: 'Poppins', sans-serif;
 }
-nav{
-    background-color: #563d7c;
-    color: #fff;
-    padding: 30px 60px;
-    display: flex;
-    justify-content: space-between;
-}
-nav ul{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-nav li{
-    list-style: none;
-}
-nav li a{
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 5px 8px;
-}
-nav li a:hover{
-    color: magenta;
-    text-decoration: none;
-}
 
 .container{
     position: relative;
     width:850px;
     height:500px;
-    background-color: #fff;
+    background-color: #f4eb9f;
     box-shadow: 25px 30px 55px #5557;
     border-radius: 13px;
     overflow: hidden;
@@ -95,7 +70,8 @@ input{
     background-color: #f3f3f3;
      border: none;
      outline:none;
-}
+     border-radius: 5px;
+    }
 label{
     position: absolute;
     left:50%;
@@ -117,7 +93,7 @@ a{
 }
 a.forgot{
     padding-bottom: 3px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid #cad1ef;
 }
 button{
     border-radius:20px;
