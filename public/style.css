@@ -13,7 +13,7 @@
 
 body {
     height: 100vh;
-    background: #f4eb9f;
+    background: #6699cc31;
     display: grid;
     place-content: center;
     font-family: 'Poppins', sans-serif;
@@ -23,7 +23,7 @@ body {
     position: relative;
     width:850px;
     height:500px;
-    background-color: #f4eb9f;
+    background: white;
     box-shadow: 25px 30px 55px #5557;
     border-radius: 13px;
     overflow: hidden;

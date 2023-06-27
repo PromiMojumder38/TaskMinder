@@ -10,51 +10,42 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!--boxicons-->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <body>
-  <nav>
-    <img src="logo_and_title-removebg.png">
-    <ul>
-      <li><a href="#" onclick="document.getElementById('logout-form').submit()">Logout</a></li>
-      <li><a href="/tasks/add">Add Task</a></li>
-      <li>Welcome, <%= user.name %></li>
-    </ul>
-    <form id="logout-form" action="/logout" method="post"></form>
-  </nav>
 
   <div class="container">
     <div class="left-side">
-      <div class="icons">
-        <!-- Add your icons here -->
-      </div>
-      <h1>Task List</h1>
+      <img src="logo_and_title-removebg.png">
+      <button class="btn" id="add-task-button"><i class="fas fa-plus"></i> &nbsp Add Task</button>
+      <button><a id="logout-button" href="#">Logout</a></li></button>
     </div>
-
+    
     <div class="middle-box">
       <section>
         <% if (tasks.length > 0) { %>
         <ul class="task-list">
           <% tasks.forEach(function(task) { %>
-          <li>
-            <div class="task-box">
+            <li>
+              <div class="task-box">
                 <div class="task-info">
                   <h3><%= task.task_name %></h3>
-                  <% if (task.task_description) { %>
-                  <p><%= task.task_description %></p>
+                  <% if (task.task_description != 0) { %>
+                    <p><%= task.task_description %></p>
+                  <% } else { %>
+                    <p>No description</p>
                   <% } %>
-                  <p>Last edited: <%= task.task_createdAt.toLocaleTimeString() %>, <%= task.task_createdAt.toLocaleDateString("en-US", { weekday: 'long' }) %>, <%= task.task_createdAt.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
-              </div>
-              <div class="task-actions">
+                  <p>Last edited: <%= task.task_updatedAt.toLocaleTimeString() %>, <%= task.task_updatedAt.toLocaleDateString("en-US", { weekday: 'long' }) %>, <%= task.task_updatedAt.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                </div>
+                <div class="task-actions">
                   <div class="dropdown-menu">
-                    <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit">Update</a>
-                    <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete">Delete</a>
+                    <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
+                    <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete"><i class="fas fa-trash"></i>&nbspDelete</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </li>
+            </li>            
           <% }) %>
         </ul>
         <% } else { %>
@@ -73,15 +64,109 @@
           <p><%= user.email %></p>
         </div>
       </div>
-      <div class="welcome-text">
-        <p>Welcome to TaskMinder!</p>
+      <div role="progressbar"
+      aria-valuenow="65"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="--value:65">
       </div>
+      <div class="task-boxes">
+        <div class="task-boxx">
+          <h5>Total</h5>
+          <p>10</p>
+        </div>
+        <div class="task-boxxx">
+          <h5>Completed</h5>
+          <p>4</p>
+        </div>
+      </div>
+    </div>    
+  
+  </div>
+
+  <div class="task-popup" id="task-popup" style="display: none;">
+    <div class="task-popup-content">
+      <span class="close" id="close-modal">&times;</span>
+      <h2>Add Task</h2>
+      <form id="add-task-form" action="/tasks/add" method="post">
+        <label for="task-name">Task Name:</label>
+        <input type="text" id="task-name" name="task_name" required>
+        <label for="task-description">Task Description:</label>
+        <textarea id="task-description" name="task_description"></textarea>
+        <button type="button" class="btn" id="add-task-button-popup">Add Task</button>
+      </form>
     </div>
-    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="module">
-    
+    const logoutButton = document.getElementById('logout-button');
+    logoutButton.addEventListener('click', function() {
+      clearToken();
+      window.location.href = '/index.html';
+    });
+
+    const addButton = document.getElementById('add-task-button');
+    const taskPopup = document.getElementById('task-popup');
+
+    addButton.addEventListener('click', function() {
+      taskPopup.style.display = 'block';
+    });
+
+    const addTaskButtonPopup = document.getElementById('add-task-button-popup');
+    addTaskButtonPopup.addEventListener('click', function() {
+      var taskName = document.getElementById('task-name').value;
+      var taskDescription = document.getElementById('task-description').value;
+      var newTaskHTML = `
+        <li>
+          <div class="task-box">
+            <div class="task-info">
+              <h3>${taskName}</h3>
+              ${taskDescription ? `<p>${taskDescription}</p>` : `<p>No description</p>`}
+              <p>Last edited: ${new Date().toLocaleTimeString()}, ${new Date().toLocaleDateString("en-US", { weekday: 'long' })}, ${new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+            <div class="task-actions">
+              <div class="dropdown-menu">
+                <a class="dropdown-item update" href="/tasks/<%= tasks.task_id %>/edit"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
+                <a class="dropdown-item delete" href="/tasks/<%= tasks.task_id %>/delete"><i class="fas fa-trash"></i>&nbspDelete</a>
+              </div>
+            </div>
+          </div>
+        </li>
+      `;
+
+      var taskList = document.querySelector('.task-list');
+      taskList.insertAdjacentHTML('afterbegin', newTaskHTML);
+
+      document.getElementById('task-name').value = '';
+      document.getElementById('task-description').value = '';
+
+      var task = {
+        task_name: taskName,
+        task_description: taskDescription
+      };
+
+      fetch('/tasks/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(task)
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Task added successfully');
+          window.location.reload();
+        } else {
+          console.error('Error adding task:', response.status);
+        }
+      })
+      .catch(error => {
+        console.error('Error adding task:', error);
+      });
+
+      taskPopup.style.display = 'none';
+    });
   </script>
 </body>
 </html>
