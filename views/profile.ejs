@@ -40,7 +40,9 @@
               </div>
               <div class="task-actions">
                 <div class="dropdown-menu">
-                  <a class="dropdown-item update" href="/tasks/edit/<%= task.task_id %>"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
+                  <form action="/tasks/edit/<%= task.task_id %>" method="GET">
+                    <button type="submit" class="dropdown-item edit"><i class="fas fa-pencil-alt"></i>&nbspUpdate</button>
+                  </form>
                   <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete(event);">
                     <button type="submit" class="dropdown-item delete"><i class="fas fa-trash"></i>&nbspDelete</button>
                   </form>
@@ -55,6 +57,7 @@
         <% } %>
       </section>
     </div>
+    
 
     <div class="right-side">
       <div class="user-info">
@@ -90,7 +93,7 @@
     <div class="task-popup-content">
       <span class="close" id="close-modal">&times;</span>
       <h2>Add Task</h2>
-      <form id="add-task-form" action="/tasks" method="post">
+      <form id="add-task-form">
         <label for="task-name">Task Name:</label>
         <input type="text" id="task-name" name="task_name" required>
         <label for="task-description">Task Description:</label>
@@ -99,9 +102,19 @@
       </form>
     </div>
   </div>
-
+  
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script type="module">
+  <script>
+    $.ajax({
+     url: '/profile',
+    type: 'GET',
+    success: function() {
+     location.reload();
+     },
+     error: function() {
+    console.error('Error reloading the page');
+     }
+    });
     const logoutButton = document.getElementById('logout-button');
     logoutButton.addEventListener('click', function() {
       clearToken();
@@ -110,75 +123,52 @@
   
     const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
+    const addTaskButtonPopup = document.getElementById('add-task-button-popup');
   
     addButton.addEventListener('click', function() {
       taskPopup.style.display = 'block';
     });
   
-    const addTaskButtonPopup = document.getElementById('add-task-button-popup');
     addTaskButtonPopup.addEventListener('click', function() {
       var taskName = document.getElementById('task-name').value;
       var taskDescription = document.getElementById('task-description').value;
-      var newTaskHTML = `
-        <li>
-          <div class="task-box">
-            <div class="task-info">
-              <h3>${taskName}</h3>
-              ${taskDescription ? `<p>${taskDescription}</p>` : `<p>No description</p>`}
-              <p>Last edited: ${new Date().toLocaleTimeString()}, ${new Date().toLocaleDateString("en-US", { weekday: 'long' })}, ${new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </div>
-            <div class="task-actions">
-              <div class="dropdown-menu">
-                <a class="dropdown-item update" href="/tasks/<%= tasks.task_id %>/edit"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
-                <a class="dropdown-item delete" href="/tasks/<%= tasks.task_id %>/delete"><i class="fas fa-trash"></i>&nbspDelete</a>
-              </div>
-            </div>
-          </div>
-        </li>
-      `;
-  
-      var taskList = document.querySelector('.task-list');
-      taskList.insertAdjacentHTML('afterbegin', newTaskHTML);
-  
-      document.getElementById('task-name').value = '';
-      document.getElementById('task-description').value = '';
+      var userId = "<%= user.id %>";
   
       var task = {
-        task_name: taskName,
-        task_description: taskDescription
+        taskName: taskName,
+        taskDescription: taskDescription,
+        userId: userId 
       };
   
-      fetch('/tasks', {
+      fetch('/addtask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(task)
       })
-      .then(response => {
-        if (response.ok) {
-          console.log('Task added successfully');
-          window.location.reload();
-        } else {
-          console.error('Error adding task:', response.status);
-        }
-      })
-      .catch(error => {
-        console.error('Error adding task:', error);
-      });
+        .then(response => {
+          if (response.ok) {
+            console.log('Task added successfully');
+            window.location.reload();
+          } else {
+            console.error('Error adding task:', response.status);
+          }
+        })
+        .catch(error => {
+          console.error('Error adding task:', error);
+        });
   
       taskPopup.style.display = 'none';
     });
-
-    
-
-
+  
     function confirmDelete(event) {
-  if (!confirm('Are you sure you want to delete this task?')) {
-    event.preventDefault(); 
-  }
-}
+      if (!confirm('Are you sure you want to delete this task?')) {
+        event.preventDefault();
+      }
+    }
   </script>
+  
   
 </body>
 </html>

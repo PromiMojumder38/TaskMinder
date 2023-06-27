@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 4300;
+const port = 3303;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -173,10 +173,36 @@ app.get('/profile', (req, res) => {
 });
 
 
+app.post("/addtask", (req, res) => {
+  const { taskName, taskDescription, userId } = req.body;
+
+  const checkUserQuery = `SELECT * FROM user WHERE id = ?`;
+  db.query(checkUserQuery, [userId], (error, userResults) => {
+    if (error) {
+      console.error("Error checking user:", error);
+      res.redirect("/"); // Redirect to the home page or an appropriate error page
+    } else {
+      if (userResults.length > 0) {
+        const addTaskQuery = `INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)`;
+        db.query(addTaskQuery, [taskName, taskDescription, userId], (error, taskResults) => {
+          if (error) {
+            console.error("Error adding task:", error);
+            res.redirect("/"); // Redirect to the home page or an appropriate error page
+          } else {
+            res.redirect("/");
+          }
+        });
+      } else {
+        console.error("User not found");
+        res.redirect("/"); // Redirect to the home page or an appropriate error page
+      }
+    }
+  });
+});
 
 app.get('/tasks/edit/:id', function(req, res, next){
   const id = req.params.id;
-  var query = `SELECT * FROM tasks WHERE id = "${id}"`;
+  var query = `SELECT * FROM tasks WHERE task_id = "${id}"`;
   db.query(query, function(err, data){
     if(err){
       throw err;
@@ -207,7 +233,9 @@ app.post('/tasks/delete/:id', function(req, res) {
     }
 
     console.log('Task deleted:', result);
-    res.sendStatus(200).redirect('/profile');
+
+    // Send a response indicating successful deletion
+    res.status(200).send('Task deleted');
   });
 });
 
