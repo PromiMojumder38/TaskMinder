@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 3303;
+const port = 5301;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -199,16 +199,23 @@ app.post("/addtask", (req, res) => {
     }
   });
 });
-
-app.get('/tasks/edit/:id', function(req, res, next){
+app.post('/tasks/edit/:id', function(req, res, next) {
   const id = req.params.id;
-  var query = `SELECT * FROM tasks WHERE task_id = "${id}"`;
-  db.query(query, function(err, data){
-    if(err){
-      throw err;
-    }
-    else{
-      res.redirect("/profile");
+  const taskName = req.body.task_name; // Get the updated task name from the request body
+  const taskDescription = req.body.task_description; // Get the updated task description from the request body
+  const taskTime = new Date(); // Replace with the updated task time
+
+  var query = `UPDATE tasks SET task_name = ?, task_description = ?, task_createdAt = ? WHERE task_id = ?`;
+  db.query(query, [taskName, taskDescription, taskTime, id], function(err, result) {
+    if (err) {
+      console.error('Error updating task:', err);
+      res.status(500).json({ error: 'Error updating task' });
+    } else if (result.affectedRows === 0) {
+      console.log('Task not found');
+      res.status(404).json({ error: 'Task not found' });
+    } else {
+      console.log('Task updated:', result);
+      res.json({ success: true });
     }
   });
 });
