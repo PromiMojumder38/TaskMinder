@@ -19,7 +19,7 @@
     <div class="left-side">
       <img src="logo_and_title-removebg.png">
       <button class="btn" id="add-task-button"><i class="fas fa-plus"></i> &nbsp Add Task</button>
-      <button><a id="logout-button" href="#">Logout</a></li></button>
+      <button class="logoutbtn"><a id="logout-button" href="#">Logout</a></li></button>
     </div>
     
     <div class="middle-box">
@@ -27,25 +27,27 @@
         <% if (tasks.length > 0) { %>
         <ul class="task-list">
           <% tasks.forEach(function(task) { %>
-            <li>
-              <div class="task-box">
-                <div class="task-info">
-                  <h3><%= task.task_name %></h3>
-                  <% if (task.task_description != 0) { %>
-                    <p><%= task.task_description %></p>
-                  <% } else { %>
-                    <p>No description</p>
-                  <% } %>
-                  <p>Last edited: <%= task.task_updatedAt.toLocaleTimeString() %>, <%= task.task_updatedAt.toLocaleDateString("en-US", { weekday: 'long' }) %>, <%= task.task_updatedAt.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
-                </div>
-                <div class="task-actions">
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item update" href="/tasks/<%= task.task_id %>/edit"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
-                    <a class="dropdown-item delete" href="/tasks/<%= task.task_id %>/delete"><i class="fas fa-trash"></i>&nbspDelete</a>
-                  </div>
+          <li>
+            <div class="task-box">
+              <div class="task-info">
+                <h3><%= task.task_name %></h3>
+                <% if (task.task_description != 0) { %>
+                <p><%= task.task_description %></p>
+                <% } else { %>
+                <p>No description</p>
+                <% } %>
+                <p>Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
+              </div>
+              <div class="task-actions">
+                <div class="dropdown-menu">
+                  <a class="dropdown-item update" href="/tasks/edit/<%= task.task_id %>"><i class="fas fa-pencil-alt"></i>&nbspUpdate</a>
+                  <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete(event);">
+                    <button type="submit" class="dropdown-item delete"><i class="fas fa-trash"></i>&nbspDelete</button>
+                  </form>
                 </div>
               </div>
-            </li>            
+            </div>
+          </li>
           <% }) %>
         </ul>
         <% } else { %>
@@ -88,7 +90,7 @@
     <div class="task-popup-content">
       <span class="close" id="close-modal">&times;</span>
       <h2>Add Task</h2>
-      <form id="add-task-form" action="/tasks/add" method="post">
+      <form id="add-task-form" action="/tasks" method="post">
         <label for="task-name">Task Name:</label>
         <input type="text" id="task-name" name="task_name" required>
         <label for="task-description">Task Description:</label>
@@ -105,14 +107,14 @@
       clearToken();
       window.location.href = '/index.html';
     });
-
+  
     const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
-
+  
     addButton.addEventListener('click', function() {
       taskPopup.style.display = 'block';
     });
-
+  
     const addTaskButtonPopup = document.getElementById('add-task-button-popup');
     addTaskButtonPopup.addEventListener('click', function() {
       var taskName = document.getElementById('task-name').value;
@@ -134,19 +136,19 @@
           </div>
         </li>
       `;
-
+  
       var taskList = document.querySelector('.task-list');
       taskList.insertAdjacentHTML('afterbegin', newTaskHTML);
-
+  
       document.getElementById('task-name').value = '';
       document.getElementById('task-description').value = '';
-
+  
       var task = {
         task_name: taskName,
         task_description: taskDescription
       };
-
-      fetch('/tasks/add', {
+  
+      fetch('/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -164,9 +166,19 @@
       .catch(error => {
         console.error('Error adding task:', error);
       });
-
+  
       taskPopup.style.display = 'none';
     });
+
+    
+
+
+    function confirmDelete(event) {
+  if (!confirm('Are you sure you want to delete this task?')) {
+    event.preventDefault(); 
+  }
+}
   </script>
+  
 </body>
 </html>

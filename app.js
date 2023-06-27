@@ -171,127 +171,46 @@ app.get('/profile', (req, res) => {
     res.status(401).send('Invalid token');
   }
 });
-app.get('/tasks', authenticateToken, (req, res) => {
-  db.query('SELECT * FROM tasks', (err, results) => {
-    if (err) {
-      console.error('Error fetching tasks:', err);
-      res.status(500).send('Error fetching tasks');
-      return;
+
+
+
+app.get('/tasks/edit/:id', function(req, res, next){
+  const id = req.params.id;
+  var query = `SELECT * FROM tasks WHERE id = "${id}"`;
+  db.query(query, function(err, data){
+    if(err){
+      throw err;
     }
-
-    const tasks = results.map((task) => ({
-      task_id: task.task_id,
-      task_name: task.task_name,
-      task_description: task.task_description,
-      task_createdAt: new Date(task.created_at)
-    }));
-
-    res.render('index', { tasks });
+    else{
+      res.redirect("/profile");
+    }
   });
 });
 
-app.get('/tasks/:taskId/edit', authenticateToken, (req, res) => {
-  const taskId = req.params.taskId;
-  const taskQuery = 'SELECT * FROM tasks WHERE task_id = ?';
-  db.query(taskQuery, [taskId], (err, taskResults) => {
-    if (err) {
-      console.error('Error retrieving task:', err);
-      res.status(500).send('Error retrieving task');
-      return;
-    }
+app.post('/tasks/delete/:id', function(req, res) {
+  const taskId = req.params.id;
+  
+  // Delete the task from the database
+  const query = 'DELETE FROM tasks WHERE task_id = ?';
 
-    if (taskResults.length === 0) {
-      res.status(404).send('Task not found');
-      return;
-    }
-
-    const task = taskResults[0];
-
-    res.render('edit-task', { task: task }); 
-  });
-});
-
-app.post('/tasks/:taskId/edit', authenticateToken, (req, res) => {
-  const taskId = req.params.taskId;
-  const { task_name, task_description } = req.body;
-
-  const updateQuery = 'UPDATE tasks SET task_name = ?, task_description = ? WHERE task_id = ?';
-  db.query(updateQuery, [task_name, task_description, taskId], (err, result) => {
-    if (err) {
-      console.error('Error updating task:', err);
-      res.status(500).send('Error updating task');
-      return;
-    }
-
-    res.redirect('/profile'); 
-  });
-});
-
-app.get('/tasks/:taskId/delete', authenticateToken, (req, res) => {
-  const taskId = req.params.taskId;
-
-  // Delete task from the database
-  const deleteQuery = 'DELETE FROM tasks WHERE task_id = ?';
-  db.query(deleteQuery, [taskId], (err, result) => {
+  db.query(query, [taskId], function(err, result) {
     if (err) {
       console.error('Error deleting task:', err);
       res.status(500).send('Error deleting task');
       return;
     }
 
-    res.redirect('/profile'); 
-  });
-});
-
-app.post('/tasks/add', authenticateToken, (req, res) => {
-  const { task_name, task_description } = req.body;
-  const userId = getUserIdFromToken(req); 
-
-  const insertQuery = 'INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)';
-  db.query(insertQuery, [task_name, task_description, userId], (err, result) => {
-    if (err) {
-      console.error('Error inserting task:', err);
-      res.status(500).send('Error inserting task');
+    if (result.affectedRows === 0) {
+      console.log('Task not found');
+      res.status(404).send('Task not found');
       return;
     }
 
-    res.redirect('/profile'); 
+    console.log('Task deleted:', result);
+    res.sendStatus(200).redirect('/profile');
   });
 });
 
-function getUserIdFromToken(req) {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded.userId;
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    return null;
-  }
-}
-
-app.post('/tasks', authenticateToken, (req, res) => {
-  const { task_name, task_description } = req.body;
-  const token = req.cookies.token;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const userId = decoded.userId;
-
-  const insertQuery = 'INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)';
-  db.query(insertQuery, [task_name, task_description, userId], (err, result) => {
-    if (err) {
-      console.error('Error adding task:', err);
-      res.status(500).send('Error adding task');
-      return;
-    }
-
-    res.redirect('/profile'); 
-  });
-});
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
