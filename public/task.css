@@ -71,6 +71,7 @@
     overflow-x: hidden;
     padding-left: 20px;
     margin-left: 20px;
+    position: relative;
   }
   
   .task-listt {

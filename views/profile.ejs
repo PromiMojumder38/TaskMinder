@@ -106,28 +106,18 @@
       <span class="close" id="close-modal">&times;</span>
       <h2>Update Task</h2>
       <form id="update-task-form">
+        <input type="hidden" id="update-task-id" name="task_id">
         <label for="update-task-name">Task Name:</label>
         <input type="text" id="update-task-name" name="task_name" required>
         <label for="update-task-description">Task Description:</label>
         <textarea id="update-task-description" name="task_description"></textarea>
-        <button type="button" class="btn" id="update-task-button-popup">Update Task</button>
+        <button type="button" class="btn" id="update-task-button-popup" onclick="updateTask()">Update Task</button>
       </form>
     </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    $.ajax({
-      url: '/profile',
-      type: 'GET',
-      success: function () {
-        location.reload();
-      },
-      error: function () {
-        console.error('Error reloading the page');
-      }
-    });
-
     const logoutButton = document.getElementById('logout-button');
     logoutButton.addEventListener('click', function () {
       clearToken();
@@ -174,70 +164,60 @@
       taskPopup.style.display = 'none';
     });
   
-    function showUpdatePopup(taskId) {
-      var updateTaskPopup = document.getElementById('udtask-popup');
-      updateTaskPopup.style.display = 'block';
-
-      fetch('/tasks/' + taskId)
-        .then(response => response.json())
-        .then(task => {
-          var updateTaskNameInput = document.getElementById('update-task-name');
-          var updateTaskDescriptionInput = document.getElementById('update-task-description');
-
-          updateTaskNameInput.value = task.task_name;
-          updateTaskDescriptionInput.value = task.task_description;
-        })
-        .catch(error => {
-          console.error('Error fetching task data:', error);
-        });
-
-      var updateTaskButtonPopup = document.getElementById('update-task-button-popup');
-      updateTaskButtonPopup.onclick = function() {
-        updateTask(taskId);
-      };
-    }
-
-    function updateTask(taskId) {
-      var updateTaskNameInput = document.getElementById('update-task-name');
-      var updateTaskDescriptionInput = document.getElementById('update-task-description');
-
-      var updatedTaskName = updateTaskNameInput.value;
-      var updatedTaskDescription = updateTaskDescriptionInput.value;
-
-      var updatedTask = {
-        task_name: updatedTaskName,
-        task_description: updatedTaskDescription
-      };
-
-      fetch('/tasks/edit/' + taskId, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedTask)
-      })
-        .then(response => {
-          if (response.ok) {
-            console.log('Task updated successfully');
-            var updateTaskPopup = document.getElementById('udtask-popup');
-            updateTaskPopup.style.display = 'none';
-            window.location.reload();
-          } else {
-            console.error('Error updating task:', response.status);
-          }
-        })
-        .catch(error => {
-          console.error('Error updating task:', error);
-        });
-    }
-    
     function confirmDelete(event) {
       if (!confirm('Are you sure you want to delete this task?')) {
         event.preventDefault();
       }
     }
-  </script>
+  function showUpdatePopup(taskId) {
+    var updateTaskPopup = document.getElementById('udtask-popup');
+    updateTaskPopup.style.display = 'block';
 
+    // Set the task ID in the update form
+    var updateTaskIdInput = document.getElementById('update-task-id');
+    updateTaskIdInput.value = taskId;
+  }
+
+  // Function to handle the update task button click event
+  function updateTask() {
+    var updateTaskId = document.getElementById('update-task-id').value;
+    var updateTaskName = document.getElementById('update-task-name').value;
+    var updateTaskDescription = document.getElementById('update-task-description').value;
+
+    var updatedTask = {
+      task_id: updateTaskId,
+      task_name: updateTaskName,
+      task_description: updateTaskDescription
+    };
+
+    fetch('/tasks/edit/' + updateTaskId, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedTask)
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Task updated successfully');
+          window.location.reload();
+        } else {
+          console.error('Error updating task:', response.status);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating task:', error);
+      });
+
+    // Close the update task popup after updating the task
+    var updateTaskPopup = document.getElementById('udtask-popup');
+    updateTaskPopup.style.display = 'none';
+  }
+
+  // Add event listener to the update task button in the popup form
+  var updateTaskButtonPopup = document.getElementById('update-task-button-popup');
+  updateTaskButtonPopup.addEventListener('click', updateTask);
+</script>
 </body>
 
 </html>

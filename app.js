@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5301;
+const port = 5002;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -180,21 +180,21 @@ app.post("/addtask", (req, res) => {
   db.query(checkUserQuery, [userId], (error, userResults) => {
     if (error) {
       console.error("Error checking user:", error);
-      res.redirect("/"); // Redirect to the home page or an appropriate error page
+      res.redirect("/"); 
     } else {
       if (userResults.length > 0) {
         const addTaskQuery = `INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)`;
         db.query(addTaskQuery, [taskName, taskDescription, userId], (error, taskResults) => {
           if (error) {
             console.error("Error adding task:", error);
-            res.redirect("/"); // Redirect to the home page or an appropriate error page
+            res.redirect("/"); 
           } else {
             res.redirect("/");
           }
         });
       } else {
         console.error("User not found");
-        res.redirect("/"); // Redirect to the home page or an appropriate error page
+        res.redirect("/"); 
       }
     }
   });
