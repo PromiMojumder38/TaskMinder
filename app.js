@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const session = require('express-session');
 const cookieParser = require('cookie-parser'); 
 
 require('dotenv').config();
@@ -18,6 +19,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser()); 
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+}));
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -91,6 +97,7 @@ app.post('/login', (req, res) => {
     res.status(400).send('Email and password are required');
     return;
   }
+
   const query = 'SELECT * FROM user WHERE email = ?';
   db.query(query, [email], (err, results) => {
     if (err) {
@@ -115,7 +122,9 @@ app.post('/login', (req, res) => {
       if (result) {
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.redirect(`/profile?token=${token}`);
+        // Store the token in the session
+        req.session.token = token;
+        res.redirect('/profile');
       } else {
         res.status(401).send('Invalid email or password');
       }
@@ -123,53 +132,62 @@ app.post('/login', (req, res) => {
   });
 });
 
-app.post('/logout', authenticateToken, (req, res) => {
-  res.clearCookie('token');
-  res.redirect('/login');
+app.get('/profile', authenticateToken, (req, res) => {
+  const userId = req.user.userId;
+
+  const userQuery = 'SELECT * FROM user WHERE id = ?';
+  db.query(userQuery, [userId], (err, userResults) => {
+    if (err) {
+      console.error('Error retrieving user data:', err);
+      res.status(500).send('Error retrieving user data');
+      return;
+    }
+
+    if (userResults.length === 0) {
+      res.status(404).send('User not found');
+      return;
+    }
+
+    const user = userResults[0];
+
+    const tasksQuery = 'SELECT * FROM tasks WHERE user_id = ?';
+    db.query(tasksQuery, [userId], (err, tasksResults) => {
+      if (err) {
+        console.error('Error retrieving tasks:', err);
+        res.status(500).send('Error retrieving tasks');
+        return;
+      }
+
+      res.render('profile', { user: user, tasks: tasksResults });
+    });
+  });
 });
 
-app.get('/profile', (req, res) => {
-  const token = req.query.token;
+function authenticateToken(req, res, next) {
+  const token = req.session.token;
 
   if (!token) {
     res.status(401).send('Unauthorized');
     return;
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.error('Error verifying token:', err);
+      res.status(403).send('Invalid token');
+      return;
+    }
 
-    const userQuery = 'SELECT * FROM user WHERE id = ?';
-    db.query(userQuery, [userId], (err, userResults) => {
-      if (err) {
-        console.error('Error retrieving user data:', err);
-        res.status(500).send('Error retrieving user data');
-        return;
-      }
-
-      if (userResults.length === 0) {
-        res.status(404).send('User not found');
-        return;
-      }
-
-      const user = userResults[0];
-
-      const tasksQuery = 'SELECT * FROM tasks WHERE user_id = ?';
-      db.query(tasksQuery, [userId], (err, tasksResults) => {
-        if (err) {
-          console.error('Error retrieving tasks:', err);
-          res.status(500).send('Error retrieving tasks');
-          return;
-        }
-
-        res.render('profile', { user: user, tasks: tasksResults });  
-      });
-    });
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    res.status(401).send('Invalid token');
-  }
+    req.user = decoded;
+    next();
+  });
+}
+app.post('/logout', (req, res) => {
+  // Clear the session token
+  req.session.token = null;
+  
+  // Redirect the user to the homepage or any other desired page after logout
+  res.redirect('/');
 });
 
 
@@ -245,28 +263,6 @@ app.post('/tasks/delete/:id', function(req, res) {
     res.status(200).send('Task deleted');
   });
 });
-
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token == null) {
-    res.status(401).send('Unauthorized');
-    return;
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      console.error('Error verifying token:', err);
-      res.status(403).send('Invalid token');
-      return;
-    }
-
-    req.user = decoded;
-    next();
-  });
-}
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);
