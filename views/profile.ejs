@@ -21,49 +21,49 @@
   <div class="container">
     <div class="left-side">
       <img src="logo_and_title-removebg.png">
-      <button class="btn" id="add-task-button"><i class="fas fa-plus"></i> &nbsp Add Task</button>
+      <button class="btn" id="add-task-button"><i class="fas fa-plus"></i></button>
       <form action="/logout" method="POST">
         <input type="hidden" name="token" value="<%= user.token %>">
-        <button class="logoutbtn" id="logout-button">Logout</button>       
+        <button class="logoutbtn" id="logout-button"><i class="fas fa-sign-out-alt"></i></button>       
       </form>
       
       </div>
 
-    <div class="middle-box">
-      <section>
-        <% if (tasks.length > 0) { %>
-        <ul class="task-list">
-          <% tasks.forEach(function(task) { %>
-          <li>
-            <div class="task-box">
-              <div class="task-info">
-                <h3><%= task.task_name %></h3>
-                <% if (task.task_description != 0) { %>
-                <p><%= task.task_description %></p>
-                <% } else { %>
-                <p>No description</p>
-                <% } %>
-                <p>Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
-              </div>
-              <div class="task-actions">
-                <div class="dropdown-menu">
-                  <button type="button" class="dropdown-item edit" onclick="showUpdatePopup('<%= task.task_id %>')">
-                    <i class="fas fa-pencil-alt"></i>&nbspUpdate
-                  </button>                  
-                  <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete(event);">
-                    <button type="submit" class="dropdown-item delete"><i class="fas fa-trash"></i>&nbspDelete</button>
-                  </form>
+      <div class="middle-box">
+        <section>
+          <% if (tasks.length > 0) { %>
+          <ul class="task-list">
+            <% tasks.forEach(function(task) { %>
+            <li>
+              <div class="task-box">
+                <div class="task-info">
+                  <h3><%= task.task_name %></h3>
+                  <% if (task.task_description != 0) { %>
+                  <p><%= task.task_description %></p>
+                  <% } else { %>
+                  <p>No description</p>
+                  <% } %>
+                  <p>Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
+                </div>
+                <div class="task-actions">
+                  <div class="dropdown-menu">
+                    <button type="button" class="dropdown-item edit" onclick="showUpdatePopup('<%= task.task_id %>', '<%= task.task_name %>', '<%= task.task_description %>')">
+                      <i class="fas fa-pencil-alt"></i>&nbspUpdate
+                    </button>                  
+                    <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete(event);">
+                      <button type="submit" class="dropdown-item delete"><i class="fas fa-trash"></i>&nbspDelete</button>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          </li>
-          <% }) %>
-        </ul>
-        <% } else { %>
-        <p>No tasks found.</p>
-        <% } %>
-      </section>
-    </div>
+            </li>
+            <% }) %>
+          </ul>
+          <% } else { %>
+          <p class="no-tasks">No tasks found.</p>
+          <% } %>
+        </section>
+      </div>
 
 
     <div class="right-side">
@@ -92,7 +92,7 @@
 
   </div>
 
-  <div class="task-popup" id="task-popup" style="display: none;">
+  <div class="popup-container" id="task-popup" style="display: none;">
     <div class="task-popup-content">
       <span class="close" id="close-modal" onclick="closePopUp()">&times;</span>
       <h2>Add Task</h2>
@@ -101,11 +101,11 @@
         <input type="text" id="task-name" name="task_name" required>
         <label for="task-description">Task Description:</label>
         <textarea id="task-description" name="task_description"></textarea>
-        <button type="button" class="btn" id="add-task-button-popup">Add Task</button>
+        <button type="button" class="btn" id="add-task-button-popup">Add</button>
       </form>
     </div>
   </div>
-  <div class="udtask-popup" id="udtask-popup" style="display: none;">
+  <div class="popup-container" id="udtask-popup" style="display: none;">
     <div class="udtask-popup-content">
       <span class="close" id="close-modal" onclick="closePopUp()">&times;</span>
       <h2>Update Task</h2>
@@ -115,11 +115,10 @@
         <input type="text" id="update-task-name" name="task_name" required>
         <label for="update-task-description">Task Description:</label>
         <textarea id="update-task-description" name="task_description"></textarea>
-        <button type="button" class="btn" id="update-task-button-popup" onclick="updateTask()">Update Task</button>
+        <button type="button" class="btn" id="update-task-button-popup" onclick="updateTask()">Update</button>
       </form>
     </div>
   </div>
-
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     const addButton = document.getElementById('add-task-button');
@@ -171,14 +170,14 @@
       }
     }
   
-    function showUpdatePopup(taskId) {
-      var updateTaskPopup = document.getElementById('udtask-popup');
-      updateTaskPopup.style.display = 'block';
-  
-      var updateTaskIdInput = document.getElementById('update-task-id');
-      updateTaskIdInput.value = taskId;
-    }
-  
+    function showUpdatePopup(taskId, taskName, taskDescription) {
+    // Populate the form fields with task details
+    document.getElementById('update-task-id').value = taskId;
+    document.getElementById('update-task-name').value = taskName;
+    document.getElementById('update-task-description').value = taskDescription;
+    // Show the update task popup
+    document.getElementById('udtask-popup').style.display = 'block';
+  }
     updateTaskButtonPopup.addEventListener('click', function() {
       var updateTaskId = document.getElementById('update-task-id').value;
       var updateTaskName = document.getElementById('update-task-name').value;
