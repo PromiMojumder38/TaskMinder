@@ -16,8 +16,3 @@ The application is a to-do list manager that utilizes Node.js for the backend se
 * Frontend: 20%
 * Backend: 70%
 * Postman Collector: 10%
-
-
-# Learning 
-**JWT - JSON Web Tokens**
-* Access token and refresh token
