@@ -84,7 +84,8 @@ app.post('/register', (req, res) => {
 
         const token = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.status(200).json({ token: token });
+        // Instead of sending a response with a token, redirect back to the same page
+        res.redirect(req.get('referer'));
       });
     });
   });
@@ -223,7 +224,7 @@ app.post('/tasks/edit/:id', function(req, res, next) {
   const taskDescription = req.body.task_description; // Get the updated task description from the request body
   const taskTime = new Date(); // Replace with the updated task time
 
-  var query = `UPDATE tasks SET task_name = ?, task_description = ?, task_createdAt = ? WHERE task_id = ?`;
+  var query = `UPDATE tasks SET task_name = ?, task_description = ?, task_updatedAt = ? WHERE task_id = ?`;
   db.query(query, [taskName, taskDescription, taskTime, id], function(err, result) {
     if (err) {
       console.error('Error updating task:', err);
