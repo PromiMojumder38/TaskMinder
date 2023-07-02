@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5002;
+const port = 5001;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -238,6 +238,37 @@ app.post('/tasks/edit/:id', function(req, res, next) {
     }
   });
 });
+
+app.post('/tasks/complete/:taskId', (req, res) => {
+  const taskId = req.params.taskId;
+  const completed = req.body.completed;
+
+  const updateTaskStatus = (taskId, completed) => {
+    return new Promise((resolve, reject) => {
+      const updateQuery = 'UPDATE tasks SET task_completed = ? WHERE task_id = ?';
+      db.query(updateQuery, [completed, taskId], (error, result) => {
+        if (error) {
+          reject(error);
+        } else if (result.affectedRows === 0) {
+          reject(new Error('Task not found'));
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  updateTaskStatus(taskId, completed)
+    .then((result) => {
+      console.log('Task updated:', result);
+      res.sendStatus(200);
+    })
+    .catch((error) => {
+      console.error('Error updating task status:', error);
+      res.status(500).send('Failed to update task status');
+    });
+});
+
 
 app.post('/tasks/delete/:id', function(req, res) {
   const taskId = req.params.id;

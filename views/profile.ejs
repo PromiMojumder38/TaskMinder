@@ -24,23 +24,26 @@
         <button class="logoutbtn" id="logout-button"><i class="fas fa-sign-out-alt"></i></button>       
       </form>
     </div>
-
     <div class="middle-box">
       <% tasks.sort((a, b) => new Date(b.task_updatedAt) - new Date(a.task_updatedAt)); %>
       <section>
         <% if (tasks.length > 0) { %>
         <ul class="task-list">
           <% tasks.forEach(function(task) { %>
+          <% if (!task.task_completed) { %>
           <li>
             <div class="task-box">
               <div class="task-info">
+                <input type="checkbox" class="task-checkbox" id="task-<%= task.task_id %>" <%= task.task_completed ? 'checked' : '' %> onclick="updateTaskStatus('<%= task.task_id %>')">
+                <label for="task-<%= task.task_id %>"></label>
+    
                 <h3><%= task.task_name %></h3>
                 <% if (task.task_description != 0) { %>
                   <p class="taskDescription"><%= task.task_description %></p>
                 <% } else { %>
                 <p>No description</p>
                 <% } %>
-                <p class ="et">Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
+                <p class="et">Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
               </div>
               <div class="task-actions">
                 <div class="dropdown-menu">
@@ -57,16 +60,14 @@
               </div>
             </div>
           </li>
+          <% } %>
           <% }) %>
         </ul>
         <% } else { %>
         <p class="no-tasks">No tasks found.</p>
         <% } %>
       </section>
-      
-      </div>
-
-
+    </div>
     <div class="right-side">
       <div class="user-info">
         <div class="user-logo">
@@ -136,7 +137,30 @@
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    const addButton = document.getElementById('add-task-button');
+// Update the task status in the database when the checkbox is clicked
+function updateTaskStatus(taskId) {
+  const checkbox = document.getElementById(`task-${taskId}`);
+  const completed = checkbox.checked;
+
+  fetch(`/tasks/complete/${taskId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ completed }),
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log(`Task ${taskId} updated successfully.`);
+      } else {
+        console.error(`Failed to update task ${taskId}.`);
+      }
+    })
+    .catch((error) => {
+      console.error(`Error updating task ${taskId}:`, error);
+    });
+}
+  const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
     const addTaskButtonPopup = document.getElementById('add-task-button-popup');
     const closeTaskPopup = document.getElementById('close-modal');

@@ -177,9 +177,7 @@
     width: 100%;
     padding: 5px;
     margin-bottom: 10px;
-  }
-  .popup-container textarea {
-    height: 30px;
+    height: 40px;
   }
 
   .popup-container .btn {
@@ -205,7 +203,7 @@
   }
 
   .middle-box {
-    margin: 30px auto;
+    margin: 0;
     width: 1000px;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -215,6 +213,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    overflow-y: scroll;
   }
   
   .task-list {
@@ -327,6 +326,7 @@
   }
 
   .left-side img {
+    margin-top: 15px;
     height: 140px;
     width: auto;
     margin-bottom: 20px;
