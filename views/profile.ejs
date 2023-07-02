@@ -21,9 +21,20 @@
       <button class="btn" id="add-task-button"><i class="fas fa-plus"></i></button>
       <form action="/logout" method="POST">
         <input type="hidden" name="token" value="<%= user.token %>">
-        <button class="logoutbtn" id="logout-button"><i class="fas fa-sign-out-alt"></i></button>       
+        <button class="logoutbtn" id="logout-button"><i class="fas fa-sign-out-alt"></i></button>
       </form>
+      <section class="completed-tasks">
+        <h3 class="ctask-heading">Completed Tasks&nbsp<i class="fas fa-chevron-down"></i></h3>
+        <div class="ctask-list">
+          <% tasks.forEach(function(task) { %>
+            <% if (task.task_completed) { %>
+              <p><%= task.task_name %></p>
+            <% } %>
+          <% }) %>
+        </div>
+      </section>
     </div>
+    
     <div class="middle-box">
       <% tasks.sort((a, b) => new Date(b.task_updatedAt) - new Date(a.task_updatedAt)); %>
       <section>
@@ -64,7 +75,7 @@
           <% }) %>
         </ul>
         <% } else { %>
-        <p class="no-tasks">No tasks found.</p>
+        <p class="no-tasks">No tasks remaining</p>
         <% } %>
       </section>
     </div>
@@ -78,19 +89,20 @@
           <p><%= user.email %></p>
         </div>
       </div>
-      <div role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="--value:65">
+      <div role="progressbar" aria-valuenow="<%= completionRatio %>" aria-valuemin="0" aria-valuemax="100" style="--value:<%= completionRatio %>">
       </div>
+      
+      
       <div class="task-boxes">
         <div class="task-boxx">
           <h5>Total</h5>
-          <p>10</p>
+          <p><%= totalTasksCount %></p>
         </div>
         <div class="task-boxxx">
           <h5>Completed</h5>
-          <p>4</p>
+          <p><%= completedTasksSum %></p>
         </div>
       </div>
-    </div>
 
   </div>
 
@@ -137,6 +149,41 @@
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+   $(document).ready(function() {
+  $('.ctask-heading').click(function() {
+    $('.ctask-list').slideToggle();
+  });
+});
+
+function fetchTasks() {
+  fetch('/tasks')
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks from the server');
+      }
+      return response.json();
+    })
+    .then((tasks) => {
+      // Populate the taskList array with the fetched tasks
+      taskList = tasks;
+
+      // Call any other functions or perform additional operations with the taskList array
+      console.log(taskList);
+
+      // Calculate the progress ratio
+      const completedTasks = taskList.filter(task => task.task_completed);
+      const completedRatio = completedTasks.length / taskList.length;
+      const progressBar = document.querySelector('.right-side div[role="progressbar"]');
+      progressBar.style.setProperty('--value', `${completedRatio * 100}%`);
+    })
+    .catch((error) => {
+      console.error('Error fetching tasks:', error);
+    });
+}
+
+// Call the fetchTasks function to retrieve tasks from the server
+fetchTasks();
+
 // Update the task status in the database when the checkbox is clicked
 function updateTaskStatus(taskId) {
   const checkbox = document.getElementById(`task-${taskId}`);
@@ -152,6 +199,7 @@ function updateTaskStatus(taskId) {
     .then((response) => {
       if (response.ok) {
         console.log(`Task ${taskId} updated successfully.`);
+        location.reload();
       } else {
         console.error(`Failed to update task ${taskId}.`);
       }

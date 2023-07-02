@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5001;
+const port = 5005;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -82,9 +82,7 @@ app.post('/register', (req, res) => {
         }
         console.log('User registered:', result);
 
-        const token = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Instead of sending a response with a token, redirect back to the same page
+        const token = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: '48h' });
         res.redirect(req.get('referer'));
       });
     });
@@ -122,8 +120,6 @@ app.post('/login', (req, res) => {
 
       if (result) {
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Store the token in the session
         req.session.token = token;
         res.redirect('/profile');
       } else {
@@ -132,7 +128,6 @@ app.post('/login', (req, res) => {
     });
   });
 });
-
 app.get('/profile', authenticateToken, (req, res) => {
   const userId = req.user.userId;
 
@@ -159,7 +154,36 @@ app.get('/profile', authenticateToken, (req, res) => {
         return;
       }
 
-      res.render('profile', { user: user, tasks: tasksResults });
+      const totalTasksQuery = 'SELECT COUNT(*) AS totalTasksCount FROM tasks WHERE user_id = ?';
+      db.query(totalTasksQuery, [userId], (err, totalTasksResult) => {
+        if (err) {
+          console.error('Error retrieving total tasks count:', err);
+          res.status(500).send('Error retrieving total tasks count');
+          return;
+        }
+
+        const completedTasksQuery = 'SELECT SUM(task_completed) AS completedTasksSum FROM tasks WHERE user_id = ?';
+        db.query(completedTasksQuery, [userId], (err, completedTasksResult) => {
+          if (err) {
+            console.error('Error retrieving completed tasks sum:', err);
+            res.status(500).send('Error retrieving completed tasks sum');
+            return;
+          }
+
+          const totalTasksCount = totalTasksResult[0].totalTasksCount;
+          const completedTasksSum = completedTasksResult[0].completedTasksSum;
+          const completionRatio = Math.round((completedTasksSum / totalTasksCount) * 100);
+
+          res.render('profile', {
+            user: user,
+            tasks: tasksResults,
+            totalTasksCount: totalTasksCount,
+            completedTasksSum: completedTasksSum,
+            completionRatio: Math.round((completedTasksSum / totalTasksCount) * 100)
+          });
+          
+        });
+      });
     });
   });
 });
@@ -184,10 +208,7 @@ function authenticateToken(req, res, next) {
   });
 }
 app.post('/logout', (req, res) => {
-  // Clear the session token
   req.session.token = null;
-  
-  // Redirect the user to the homepage or any other desired page after logout
   res.redirect('/');
 });
 
@@ -218,11 +239,12 @@ app.post("/addtask", (req, res) => {
     }
   });
 });
+
 app.post('/tasks/edit/:id', function(req, res, next) {
   const id = req.params.id;
-  const taskName = req.body.task_name; // Get the updated task name from the request body
-  const taskDescription = req.body.task_description; // Get the updated task description from the request body
-  const taskTime = new Date(); // Replace with the updated task time
+  const taskName = req.body.task_name; 
+  const taskDescription = req.body.task_description; 
+  const taskTime = new Date(); 
 
   var query = `UPDATE tasks SET task_name = ?, task_description = ?, task_updatedAt = ? WHERE task_id = ?`;
   db.query(query, [taskName, taskDescription, taskTime, id], function(err, result) {
@@ -273,7 +295,6 @@ app.post('/tasks/complete/:taskId', (req, res) => {
 app.post('/tasks/delete/:id', function(req, res) {
   const taskId = req.params.id;
   
-  // Delete the task from the database
   const query = 'DELETE FROM tasks WHERE task_id = ?';
 
   db.query(query, [taskId], function(err, result) {
@@ -290,9 +311,8 @@ app.post('/tasks/delete/:id', function(req, res) {
     }
 
     console.log('Task deleted:', result);
+    location.reload();
 
-    // Send a response indicating successful deletion
-    res.status(200).send('Task deleted');
   });
 });
 
