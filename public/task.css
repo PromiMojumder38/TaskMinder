@@ -67,6 +67,7 @@
   }
   
   .user-logo {
+    margin-top: 10px;
     width: 250px;
     height: 100px;
     border-radius: 50%;
@@ -107,6 +108,7 @@
   .task-boxx h5 , .task-boxxx h5{
     margin-bottom: 5px;
     font-size: 1.0rem;
+    color: #ffffff;
   }
   
   .task-boxx p, .task-boxxx p{
@@ -170,14 +172,17 @@
   .popup-container label {
     display: block;
     margin-bottom: 5px;
+    margin-left: 10px;
   }
 
   .popup-container input[type="text"],
   .popup-container textarea {
-    width: 100%;
+    width: 93%;
     padding: 5px;
     margin-bottom: 10px;
     height: 40px;
+    margin-right: 10px;
+    margin-left: 10px;
   }
 
   .popup-container .btn {
@@ -188,13 +193,15 @@
     cursor: pointer;
     border-radius: 2px;
     margin-left: 195px;
+    width: 85px;
+    font-size: 18px;
+    font-weight: bold;
   }
 
   .popup-container .close {
     position: absolute;
     top: 14px;
     right: 15px;
-    font-size: 24px;
     cursor: pointer;
     color: white;
   }
@@ -354,9 +361,17 @@
     background-color: var(--main-color3);
   }
 
-.task-checkbox {
-  margin-right: 0px;
-}
+  .task-checkbox {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Aligns checkbox to the right */
+    font-size: 50px; /* Increases checkbox size */
+    cursor: pointer;
+  }
+  
+  .task-checkbox input[type="checkbox"] {
+    margin-right: 0px; /* Adds some space between checkbox and label */
+  }
 
 .completed-tasks {
   margin-top: 20px;
@@ -377,4 +392,6 @@
 
 .ctask-list {
   display: none;
+  list-style-type: bullet;
+  text-align: left;
 }

@@ -143,6 +143,7 @@
         <input type="text" id="view-task-name" name="task_name" required readonly>
         <label for="view-task-description">Task Description:</label>
         <textarea id="view-task-description" name="task_description" readonly></textarea>
+        <button type="button" class="btn" id="view-task-button-popup" onclick="closePopUp()">OK</button>
       </form>
     </div>
   </div>
@@ -155,36 +156,6 @@
   });
 });
 
-function fetchTasks() {
-  fetch('/tasks')
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks from the server');
-      }
-      return response.json();
-    })
-    .then((tasks) => {
-      // Populate the taskList array with the fetched tasks
-      taskList = tasks;
-
-      // Call any other functions or perform additional operations with the taskList array
-      console.log(taskList);
-
-      // Calculate the progress ratio
-      const completedTasks = taskList.filter(task => task.task_completed);
-      const completedRatio = completedTasks.length / taskList.length;
-      const progressBar = document.querySelector('.right-side div[role="progressbar"]');
-      progressBar.style.setProperty('--value', `${completedRatio * 100}%`);
-    })
-    .catch((error) => {
-      console.error('Error fetching tasks:', error);
-    });
-}
-
-// Call the fetchTasks function to retrieve tasks from the server
-fetchTasks();
-
-// Update the task status in the database when the checkbox is clicked
 function updateTaskStatus(taskId) {
   const checkbox = document.getElementById(`task-${taskId}`);
   const completed = checkbox.checked;
