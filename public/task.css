@@ -34,6 +34,7 @@
   
   .container {
     display: flex;
+    height: 100vh;
   }
 
   .task-listt {
@@ -52,7 +53,7 @@
 
   .right-side {
     flex: 1;
-    padding: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     box-shadow: 1px 1px 1px #5557;
@@ -153,15 +154,17 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--main-color2);
+    background-color: var(--fg);
     padding: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(32, 127, 204, 0.1);
     z-index: 9999;
+    color: white;
   }
 
   .popup-container h2 {
     margin-top: 0;
+    text-align: center;
   }
 
   .popup-container label {
@@ -175,21 +178,30 @@
     padding: 5px;
     margin-bottom: 10px;
   }
+  .popup-container textarea {
+    height: 30px;
+  }
 
   .popup-container .btn {
     padding: 5px 10px;
-    background-color: #4CAF50;
+    background-color: var(--main-color2);
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 2px;
+    margin-left: 195px;
   }
 
   .popup-container .close {
     position: absolute;
-    top: 10px;
+    top: 14px;
     right: 15px;
     font-size: 24px;
     cursor: pointer;
+    color: white;
+  }
+  .popup-container .close:hover{
+    color: rgb(155, 9, 9);
   }
 
   .middle-box {
@@ -199,7 +211,7 @@
     border: 1px solid #ccc;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-right: 30px;
+    margin-right: 10px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -220,11 +232,12 @@
     justify-content: center;
     border: 1px solid #ccc;
     padding: 20px;
-    width:  422px; 
+    width:  430px; 
     margin-bottom: 20px;
     box-sizing: border-box;
     margin-right: 20px;
     background-color: #ec72af6e;
+    border-radius: 5px;
   }
   
   .task-info {
@@ -235,22 +248,23 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 100%;
+    max-width: 200px;
   }
   
   .task-info h3 {
     margin: 0;
-    font-size: 25px;
+    font-size: 28px;
     font-weight: bold;
   }
   
   .task-info p {
     margin: 5px 0;
     color: #555;
+    font-size: 18px;
   }
  .middle-box .et{
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
  } 
   .task-actions {
     display: flex;
@@ -306,38 +320,34 @@
   .left-side {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-direction: column;
-    width:200px;
+    width:170px;
+    height: 100%;
+    background-color: var(--fg);
   }
 
   .left-side img {
-    height: 40px;
+    height: 140px;
     width: auto;
+    margin-bottom: 20px;
   }
 
-  .btn {
+  .btn, .logoutbtn{
     padding: 10px;
-    background-color: #4CAF50;
+    background-color: var(--main-color);
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 28px;
     border-radius: 50%;
+    margin-bottom: 20px;
   }
 
   .logoutbtn {
-    padding: 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    border-radius: 50%;
-    margin-left: 10px;
+    background-color: var(--main-color2);
   }
 
   .btn:hover,
   .logoutbtn:hover {
-    background-color: #45a049;
+    background-color: var(--main-color3);
   }

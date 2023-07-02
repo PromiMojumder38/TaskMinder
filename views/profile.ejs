@@ -36,8 +36,8 @@
               <div class="task-info">
                 <h3><%= task.task_name %></h3>
                 <% if (task.task_description != 0) { %>
-                  <p class="taskDescription" id="taskDescription<%= task.task_id %>"><%= task.task_description %></p>
-                  <% } else { %>
+                  <p class="taskDescription"><%= task.task_description %></p>
+                <% } else { %>
                 <p>No description</p>
                 <% } %>
                 <p class ="et">Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
@@ -242,12 +242,27 @@
     viewTaskPopup.style.display = 'none';
   }
   const taskDescriptions = document.querySelectorAll('.taskDescription');
-    taskDescriptions.forEach(description => {
-      if (description.scrollWidth > description.clientWidth) {
-        description.title = description.textContent;
-      }
+
+taskDescriptions.forEach(description => {
+  const fullDescription = description.nextElementSibling;
+  const readMoreLink = description.nextElementSibling.nextElementSibling;
+
+  const maxCharacters = 100;
+  const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
+
+  description.textContent = truncatedDescription;
+
+  if (truncatedDescription.length < description.textContent.trim().length) {
+    readMoreLink.style.display = 'inline';
+
+    readMoreLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      description.classList.add('hide');
+      fullDescription.classList.remove('hide');
+      readMoreLink.style.display = 'none';
     });
-    
+  }
+});
   </script>
   
 </body>
