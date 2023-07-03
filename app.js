@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5005;
+const port = 5001;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -216,29 +216,36 @@ app.post('/logout', (req, res) => {
 app.post("/addtask", (req, res) => {
   const { taskName, taskDescription, userId } = req.body;
 
+  if (!taskName || taskName.trim() === "") {
+    console.error("Task name is empty");
+    res.redirect("/");
+    return;
+  }
+
   const checkUserQuery = `SELECT * FROM user WHERE id = ?`;
   db.query(checkUserQuery, [userId], (error, userResults) => {
     if (error) {
       console.error("Error checking user:", error);
-      res.redirect("/"); 
+      res.redirect("/");
     } else {
       if (userResults.length > 0) {
         const addTaskQuery = `INSERT INTO tasks (task_name, task_description, user_id) VALUES (?, ?, ?)`;
         db.query(addTaskQuery, [taskName, taskDescription, userId], (error, taskResults) => {
           if (error) {
             console.error("Error adding task:", error);
-            res.redirect("/"); 
+            res.redirect("/");
           } else {
             res.redirect("/");
           }
         });
       } else {
         console.error("User not found");
-        res.redirect("/"); 
+        res.redirect("/");
       }
     }
   });
 });
+
 
 app.post('/tasks/edit/:id', function(req, res, next) {
   const id = req.params.id;
@@ -294,7 +301,7 @@ app.post('/tasks/complete/:taskId', (req, res) => {
 
 app.post('/tasks/delete/:id', function(req, res) {
   const taskId = req.params.id;
-  
+
   const query = 'DELETE FROM tasks WHERE task_id = ?';
 
   db.query(query, [taskId], function(err, result) {
@@ -311,10 +318,10 @@ app.post('/tasks/delete/:id', function(req, res) {
     }
 
     console.log('Task deleted:', result);
-    location.reload();
-
+    res.redirect('/profile');
   });
 });
+
 
 app.use((err, req, res, next) => {
   console.error('Error:', err);

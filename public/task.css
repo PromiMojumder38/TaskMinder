@@ -150,6 +150,10 @@
     transform: scale(1.1);
     transition: transform 0.3s;
   }
+  .task-box:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s;
+  }
   div[role="progressbar"] {
     align-items: center;
     margin: 10px;
@@ -197,6 +201,8 @@
     box-shadow: 0 2px 4px rgba(32, 127, 204, 0.1);
     z-index: 9999;
     color: white;
+    width: 400px;
+    border-radius: 5px;
   }
 
   .popup-container h2 {
@@ -222,23 +228,23 @@
 
   .popup-container .btn {
     padding: 5px 10px;
-    background-color: var(--main-color2);
+    background-color: var(--fg);
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 2px;
-    margin-left: 195px;
+    margin-left: 165px;
     width: 85px;
     font-size: 15px;
     height: 40px;
     font-weight: bold;
-    margin-bottom: -15px;
+    margin-bottom: -10px;
   }
 
   .popup-container .close {
     position: absolute;
-    top: 2px;
-    right: 15px;
+    top: 0px;
+    right: 25px;
     cursor: pointer;
     color: white;
     font-size: 3rem;
@@ -328,6 +334,12 @@
     display: inline-block;
     font-size: 1.5rem;
     color: black;
+  }
+  .custom-checkbox .check-icon:hover {
+    color: var(--main-color3);
+    transform: scale(1.1);
+    transition: transform 0.3s;
+    cursor: pointer;
   }
   .task-info p {
     margin: 5px 0;
