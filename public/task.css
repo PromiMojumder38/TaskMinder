@@ -245,24 +245,52 @@
     background-color: #ec72af6e;
     border-radius: 5px;
   }
-  
-  .task-info {
-    flex-grow: 1;
+
+  .taskDescription {
     text-align: center;
   }
-  .taskDescription {
+  .task-box .th {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 200px;
+    max-width: 200px; 
   }
-  
-  .task-info h3 {
-    margin: 0;
-    font-size: 28px;
+  .task-info .custom-checkbox h3 {
+    margin: 10px;
+    font-size: 30px;
     font-weight: bold;
+    text-align: center;
+    margin-left: 30px;
+    margin-top: -12px;
+    margin-bottom: 2px;
   }
-  
+  .hidden-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .custom-checkbox {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .custom-checkbox .check-icon,
+  .custom-checkbox input[type="checkbox"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .custom-checkbox input[type="checkbox"] {
+    display: none;
+  }
+
+  .custom-checkbox .check-icon {
+    display: inline-block;
+    font-size: 1.5rem;
+    color: var(--fg);
+  }
   .task-info p {
     margin: 5px 0;
     color: #555;
@@ -271,6 +299,7 @@
  .middle-box .et{
   font-size: 12px;
   margin-bottom: 12px;
+  text-align: center;
  } 
   .task-actions {
     display: flex;
@@ -318,9 +347,10 @@
   }
   
   p.no-tasks {
-    text-align: center;
-    margin-top: 20px;
-    color: #555;
+    color: var(--fg);
+    font-size: 3rem;
+    margin: 240px;
+    margin-left: 280px;
   }
   
   .left-side {
@@ -361,17 +391,6 @@
     background-color: var(--main-color3);
   }
 
-  .task-checkbox {
-    display: flex;
-    align-items: center;
-    margin-left: auto; /* Aligns checkbox to the right */
-    font-size: 50px; /* Increases checkbox size */
-    cursor: pointer;
-  }
-  
-  .task-checkbox input[type="checkbox"] {
-    margin-right: 0px; /* Adds some space between checkbox and label */
-  }
 
 .completed-tasks {
   margin-top: 20px;

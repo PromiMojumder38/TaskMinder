@@ -45,14 +45,18 @@
           <li>
             <div class="task-box">
               <div class="task-info">
-                <input type="checkbox" class="task-checkbox" id="task-<%= task.task_id %>" <%= task.task_completed ? 'checked' : '' %> onclick="updateTaskStatus('<%= task.task_id %>')">
-                <label for="task-<%= task.task_id %>"></label>
+                <div class="custom-checkbox">
+                  <h3 class="th"><%= task.task_name %></h3>
+                  <label for="task-<%= task.task_id %>">
+                    <input type="checkbox" class="task-checkbox" id="task-<%= task.task_id %>" <%= task.task_completed ? 'checked' : '' %> onclick="updateTaskStatus('<%= task.task_id %>')">
+                    <i class="fa-regular fa-circle-check check-icon"></i>
+                  </label>
+                </div>                
     
-                <h3><%= task.task_name %></h3>
                 <% if (task.task_description != 0) { %>
                   <p class="taskDescription"><%= task.task_description %></p>
                 <% } else { %>
-                <p>No description</p>
+                <p class="taskDescription">No description</p>
                 <% } %>
                 <p class="et">Last edited: <%= task.task_updatedAt.toLocaleString('en-US') %></p>
               </div>
@@ -98,11 +102,20 @@
           <h5>Total</h5>
           <p><%= totalTasksCount %></p>
         </div>
-        <div class="task-boxxx">
-          <h5>Completed</h5>
-          <p><%= completedTasksSum %></p>
-        </div>
+        
+        <% if (completedTasksSum < 1) { %>
+          <div class="task-boxxx">
+            <h5>Completed</h5>
+            <p>0</p>
+          </div>
+        <% } else { %>
+          <div class="task-boxxx">
+            <h5>Completed</h5>
+            <p><%= completedTasksSum %></p>
+          </div>
+        <% } %>
       </div>
+      
 
   </div>
 
@@ -178,8 +191,8 @@ function updateTaskStatus(taskId) {
     .catch((error) => {
       console.error(`Error updating task ${taskId}:`, error);
     });
-}
-  const addButton = document.getElementById('add-task-button');
+} 
+const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
     const addTaskButtonPopup = document.getElementById('add-task-button-popup');
     const closeTaskPopup = document.getElementById('close-modal');
@@ -284,13 +297,36 @@ function updateTaskStatus(taskId) {
     updateTaskPopup.style.display = 'none';
     viewTaskPopup.style.display = 'none';
   }
-  const taskDescriptions = document.querySelectorAll('.taskDescription');
+
+  const taskHeadline = document.querySelectorAll('.th');
+
+taskHeadline.forEach(description => {
+  const fullDescription = description.nextElementSibling;
+  const readMoreLink = description.nextElementSibling.nextElementSibling;
+
+  const maxCharacters = 50;
+  const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
+
+  description.textContent = truncatedDescription;
+
+  if (truncatedDescription.length < description.textContent.trim().length) {
+    readMoreLink.style.display = 'inline';
+
+    readMoreLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      description.classList.add('hide');
+      fullDescription.classList.remove('hide');
+      readMoreLink.style.display = 'none';
+    });
+  }
+});
+const taskDescriptions = document.querySelectorAll('.taskDescription');
 
 taskDescriptions.forEach(description => {
   const fullDescription = description.nextElementSibling;
   const readMoreLink = description.nextElementSibling.nextElementSibling;
 
-  const maxCharacters = 100;
+  const maxCharacters = 50;
   const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
 
   description.textContent = truncatedDescription;
