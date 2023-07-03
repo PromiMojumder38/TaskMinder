@@ -83,6 +83,8 @@
   
   .user-details {
     flex: 1;
+    color: #369;
+    text-transform: uppercase;
   }
   
   
@@ -90,6 +92,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
+    margin-top: 10px;
   }
   
   .task-boxx {
@@ -102,18 +105,50 @@
     padding: 10px;
     border-radius: 5px;
     text-align: center;
-    background-color: #e766a6bf;
+    background-color: #d47aa775;
   }
   
   .task-boxx h5 , .task-boxxx h5{
     margin-bottom: 5px;
     font-size: 1.0rem;
-    color: #ffffff;
+    color: var(--fg);
+    text-transform: uppercase;
+  }
+  .task-boxxx h5{
+    color: var(--main-color2);
   }
   
   .task-boxx p, .task-boxxx p{
     font-weight: bold;
     font-size: 20px;
+    color: #369;
+  }
+  .task-boxxx p{
+    color: var(--main-color2);
+  }
+  
+  .task-boxx i{
+    color: var(--fg);
+    background-color: white;
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    font-size: 1.2rem;
+    padding-top: 2px;
+  }
+.icon i{
+    color: var(--main-color2);
+    background-color: white;
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    font-size: 1.5rem;
+  }
+  
+  .task-boxx:hover,
+  .task-boxxx:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s;
   }
   div[role="progressbar"] {
     align-items: center;
@@ -156,7 +191,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--fg);
+    background: linear-gradient(180deg, #2c668f, #4c8dbb,#82c4e2);
     padding: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(32, 127, 204, 0.1);
@@ -194,19 +229,22 @@
     border-radius: 2px;
     margin-left: 195px;
     width: 85px;
-    font-size: 18px;
+    font-size: 15px;
+    height: 40px;
     font-weight: bold;
+    margin-bottom: -15px;
   }
 
   .popup-container .close {
     position: absolute;
-    top: 14px;
+    top: 2px;
     right: 15px;
     cursor: pointer;
     color: white;
+    font-size: 3rem;
   }
   .popup-container .close:hover{
-    color: rgb(155, 9, 9);
+    color: var(--main-color3);
   }
 
   .middle-box {
@@ -289,7 +327,7 @@
   .custom-checkbox .check-icon {
     display: inline-block;
     font-size: 1.5rem;
-    color: var(--fg);
+    color: black;
   }
   .task-info p {
     margin: 5px 0;
@@ -407,10 +445,11 @@
 .completed-tasks p {
   font-size: 15px;
   margin-bottom: 2px;
+  padding: 5px;
 }
 
 .ctask-list {
   display: none;
-  list-style-type: bullet;
+  list-style: disc;
   text-align: left;
 }

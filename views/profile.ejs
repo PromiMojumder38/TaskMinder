@@ -89,8 +89,7 @@
           <img src="only logo.png" alt="User Logo">
         </div>
         <div class="user-details">
-          <h4><%= user.name %></h4>
-          <p><%= user.email %></p>
+          <h4>Welcome,&nbsp<%= user.name %></h4>
         </div>
       </div>
       <div role="progressbar" aria-valuenow="<%= completionRatio %>" aria-valuemin="0" aria-valuemax="100" style="--value:<%= completionRatio %>">
@@ -99,22 +98,30 @@
       
       <div class="task-boxes">
         <div class="task-boxx">
+            <i class="fas fa-tasks"></i>
           <h5>Total</h5>
           <p><%= totalTasksCount %></p>
         </div>
-        
+      
         <% if (completedTasksSum < 1) { %>
           <div class="task-boxxx">
+            <div class="icon">
+              <i class="fas fa-check"></i>
+            </div>
             <h5>Completed</h5>
             <p>0</p>
           </div>
         <% } else { %>
           <div class="task-boxxx">
+            <div class="icon">
+              <i class="fas fa-check"></i>
+            </div>
             <h5>Completed</h5>
             <p><%= completedTasksSum %></p>
           </div>
         <% } %>
       </div>
+      
       
 
   </div>
