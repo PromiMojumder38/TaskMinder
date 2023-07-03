@@ -170,42 +170,43 @@
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-   $(document).ready(function() {
-  $('.ctask-heading').click(function() {
-    $('.ctask-list').slideToggle();
-  });
-});
-
-function updateTaskStatus(taskId) {
-  const checkbox = document.getElementById(`task-${taskId}`);
-  const completed = checkbox.checked;
-
-  fetch(`/tasks/complete/${taskId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ completed }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log(`Task ${taskId} updated successfully.`);
-        location.reload();
-      } else {
-        console.error(`Failed to update task ${taskId}.`);
-      }
-    })
-    .catch((error) => {
-      console.error(`Error updating task ${taskId}:`, error);
+    $(document).ready(function() {
+      $('.ctask-heading').click(function() {
+        $('.ctask-list').slideToggle();
+      });
     });
-} 
-const addButton = document.getElementById('add-task-button');
+  
+    function updateTaskStatus(taskId) {
+      const checkbox = document.getElementById(`task-${taskId}`);
+      const completed = checkbox.checked;
+  
+      fetch(`/tasks/complete/${taskId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ completed }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log(`Task ${taskId} updated successfully.`);
+            location.reload();
+          } else {
+            console.error(`Failed to update task ${taskId}.`);
+          }
+        })
+        .catch((error) => {
+          console.error(`Error updating task ${taskId}:`, error);
+        });
+    }
+  
+    const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
     const addTaskButtonPopup = document.getElementById('add-task-button-popup');
     const closeTaskPopup = document.getElementById('close-modal');
     const updateTaskButtonPopup = document.getElementById('update-task-button-popup');
   
-    addButton.addEventListener('click', function () {
+    addButton.addEventListener('click', function() {
       taskPopup.style.display = 'block';
     });
   
@@ -214,10 +215,15 @@ const addButton = document.getElementById('add-task-button');
       var taskDescription = document.getElementById('task-description').value;
       var userId = "<%= user.id %>";
   
+      if (taskName.trim() === "") {
+        alert("Task name cannot be empty");
+        return;
+      }
+  
       var task = {
         taskName: taskName,
         taskDescription: taskDescription,
-        userId: userId 
+        userId: userId
       };
   
       fetch('/addtask', {
@@ -243,27 +249,35 @@ const addButton = document.getElementById('add-task-button');
     });
   
     function confirmDelete() {
-  return confirm('Are you sure you want to delete this task?');
-}
+      return confirm('Are you sure you want to delete this task?');
+    }
+  
     function showUpdatePopup(taskId, taskName, taskDescription) {
-    document.getElementById('update-task-id').value = taskId;
-    document.getElementById('update-task-name').value = taskName;
-    document.getElementById('update-task-description').value = taskDescription;
+      document.getElementById('update-task-id').value = taskId;
+      document.getElementById('update-task-name').value = taskName;
+      document.getElementById('update-task-description').value = taskDescription;
   
-    document.getElementById('udtask-popup').style.display = 'block';
-  }
-  function showViewPopup(taskId, taskName, taskDescription) {
-    document.getElementById('view-task-id').value = taskId;
-    document.getElementById('view-task-name').value = taskName;
-    document.getElementById('view-task-description').value = taskDescription;
+      document.getElementById('udtask-popup').style.display = 'block';
+    }
   
-    document.getElementById('view-task-popup').style.display = 'block';
-  }
+    function showViewPopup(taskId, taskName, taskDescription) {
+      document.getElementById('view-task-id').value = taskId;
+      document.getElementById('view-task-name').value = taskName;
+      document.getElementById('view-task-description').value = taskDescription;
+  
+      document.getElementById('view-task-popup').style.display = 'block';
+    }
+  
     updateTaskButtonPopup.addEventListener('click', function() {
       var updateTaskId = document.getElementById('update-task-id').value;
       var updateTaskName = document.getElementById('update-task-name').value;
       var updateTaskDescription = document.getElementById('update-task-description').value;
-  
+      
+      if (updateTaskName.trim() === "") {
+        alert("Task name cannot be empty");
+        return;
+      }
+
       var updatedTask = {
         task_id: updateTaskId,
         task_name: updateTaskName,
@@ -292,61 +306,64 @@ const addButton = document.getElementById('add-task-button');
       var updateTaskPopup = document.getElementById('udtask-popup');
       updateTaskPopup.style.display = 'none';
     });
+  
     function closePopUp() {
-    var taskPopup = document.getElementById('task-popup');
-    var updateTaskPopup = document.getElementById('udtask-popup');
-    var viewTaskPopup = document.getElementById('view-task-popup');
-
-    taskPopup.style.display = 'none';
-    updateTaskPopup.style.display = 'none';
-    viewTaskPopup.style.display = 'none';
-  }
-
-  const taskHeadline = document.querySelectorAll('.th');
-
-taskHeadline.forEach(description => {
-  const fullDescription = description.nextElementSibling;
-  const readMoreLink = description.nextElementSibling.nextElementSibling;
-
-  const maxCharacters = 50;
-  const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
-
-  description.textContent = truncatedDescription;
-
-  if (truncatedDescription.length < description.textContent.trim().length) {
-    readMoreLink.style.display = 'inline';
-
-    readMoreLink.addEventListener('click', function(event) {
-      event.preventDefault();
-      description.classList.add('hide');
-      fullDescription.classList.remove('hide');
-      readMoreLink.style.display = 'none';
+      var taskPopup = document.getElementById('task-popup');
+      var updateTaskPopup = document.getElementById('udtask-popup');
+      var viewTaskPopup = document.getElementById('view-task-popup');
+  
+      taskPopup.style.display = 'none';
+      updateTaskPopup.style.display = 'none';
+      viewTaskPopup.style.display = 'none';
+    }
+  
+    const taskHeadline = document.querySelectorAll('.th');
+  
+    taskHeadline.forEach(description => {
+      const fullDescription = description.nextElementSibling;
+      const readMoreLink = description.nextElementSibling.nextElementSibling;
+  
+      const maxCharacters = 50;
+      const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
+  
+      description.textContent = truncatedDescription;
+  
+      if (truncatedDescription.length < description.textContent.trim().length) {
+        readMoreLink.style.display = 'inline';
+  
+        readMoreLink.addEventListener('click', function(event) {
+          event.preventDefault();
+          description.classList.add('hide');
+          fullDescription.classList.remove('hide');
+          readMoreLink.style.display = 'none';
+        });
+      }
     });
-  }
-});
-const taskDescriptions = document.querySelectorAll('.taskDescription');
-
-taskDescriptions.forEach(description => {
-  const fullDescription = description.nextElementSibling;
-  const readMoreLink = description.nextElementSibling.nextElementSibling;
-
-  const maxCharacters = 50;
-  const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
-
-  description.textContent = truncatedDescription;
-
-  if (truncatedDescription.length < description.textContent.trim().length) {
-    readMoreLink.style.display = 'inline';
-
-    readMoreLink.addEventListener('click', function(event) {
-      event.preventDefault();
-      description.classList.add('hide');
-      fullDescription.classList.remove('hide');
-      readMoreLink.style.display = 'none';
+  
+    const taskDescriptions = document.querySelectorAll('.taskDescription');
+  
+    taskDescriptions.forEach(description => {
+      const fullDescription = description.nextElementSibling;
+      const readMoreLink = description.nextElementSibling.nextElementSibling;
+  
+      const maxCharacters = 50;
+      const truncatedDescription = description.textContent.trim().substring(0, maxCharacters);
+  
+      description.textContent = truncatedDescription;
+  
+      if (truncatedDescription.length < description.textContent.trim().length) {
+        readMoreLink.style.display = 'inline';
+  
+        readMoreLink.addEventListener('click', function(event) {
+          event.preventDefault();
+          description.classList.add('hide');
+          fullDescription.classList.remove('hide');
+          readMoreLink.style.display = 'none';
+        });
+      }
     });
-  }
-});
   </script>
+  
   
 </body>
 

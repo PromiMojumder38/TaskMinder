@@ -119,7 +119,7 @@ app.post('/login', (req, res) => {
       }
 
       if (result) {
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
         req.session.token = token;
         res.redirect('/profile');
       } else {
@@ -252,7 +252,11 @@ app.post('/tasks/edit/:id', function(req, res, next) {
   const taskName = req.body.task_name; 
   const taskDescription = req.body.task_description; 
   const taskTime = new Date(); 
-
+  if (!taskName || taskName.trim() === "") {
+    console.error("Task name is empty");
+    res.redirect("/");
+    return;
+  }
   var query = `UPDATE tasks SET task_name = ?, task_description = ?, task_updatedAt = ? WHERE task_id = ?`;
   db.query(query, [taskName, taskDescription, taskTime, id], function(err, result) {
     if (err) {
