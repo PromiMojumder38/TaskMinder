@@ -34,7 +34,7 @@
   
   .container {
     display: flex;
-    height: 100vh;
+    height: fit-content;
   }
 
   .task-listt {
@@ -255,7 +255,7 @@
 
   .middle-box {
     margin: 0;
-    width: 1000px;
+    width: 950px;
     background-color: #fff;
     border: 1px solid #ccc;
     padding: 20px;
@@ -364,7 +364,6 @@
   }
   
   .dropdown-item {
-    background: none;
     border: none;
     color: white;
     padding: 6px;
@@ -386,9 +385,19 @@
     padding-left: 6px;
     background-color: rgba(23, 108, 23, 0.826);
   }
+  .dropdown-item.deletee {
+    background-color: transparent;
+    height: 2px;
+    width: 2px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+  }
   
   .dropdown-item:hover {
     background-color: var(--main-color3);
+  }
+  .dropdown-item.deletee:hover{
+    background-color: transparent;
   }
   
   .fa-pencil-alt,
@@ -396,18 +405,18 @@
     margin-right: 5px;
   }
   
-  p.no-tasks {
+  .middle-box .no-tasks {
     color: var(--fg);
     font-size: 3rem;
-    margin: 240px;
-    margin-left: 280px;
+    margin: 210px;
+    margin-left: 250px;
   }
   
   .left-side {
     display: flex;
     align-items: center;
     flex-direction: column;
-    width:170px;
+    width:220px;
     height: 100%;
     background-color: var(--fg);
   }
@@ -446,22 +455,19 @@
   margin-top: 20px;
   text-align: center;
   color: white;
+  margin-bottom: 350px;
 }
 
 .completed-tasks h3 {
   font-size: 15px;
   margin-bottom: 10px;
   cursor: pointer;
-}
-
-.completed-tasks p {
-  font-size: 15px;
-  margin-bottom: 2px;
-  padding: 5px;
+  text-align: center;
 }
 
 .ctask-list {
   display: none;
-  list-style: disc;
-  text-align: left;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
 }
+

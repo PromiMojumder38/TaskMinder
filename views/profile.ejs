@@ -28,7 +28,9 @@
         <div class="ctask-list">
           <% tasks.forEach(function(task) { %>
             <% if (task.task_completed) { %>
-              <p><%= task.task_name %></p>
+              <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete();">
+                <button type="submit" class="dropdown-item deletee"><i class="fas fa-trash-alt"></i></button>
+                <%= task.task_name %></form>
             <% } %>
           <% }) %>
         </div>
@@ -38,7 +40,7 @@
     <div class="middle-box">
       <% tasks.sort((a, b) => new Date(b.task_updatedAt) - new Date(a.task_updatedAt)); %>
       <section>
-        <% if (tasks.length > 0) { %>
+        <% if (tasks.length - completedTasksSum > 0){ %>
         <ul class="task-list">
           <% tasks.forEach(function(task) { %>
           <% if (!task.task_completed) { %>
