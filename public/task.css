@@ -34,7 +34,7 @@
   
   .container {
     display: flex;
-    height: fit-content;
+    height: 100vh;
   }
 
   .task-listt {
@@ -189,7 +189,7 @@
     initial-value: 0;
   }
 
-  .popup-container {
+  .popup-container, .cpopup-container {
     display: none;
     position: fixed;
     top: 50%;
@@ -226,7 +226,7 @@
     margin-left: 10px;
   }
 
-  .popup-container .btn {
+  .popup-container .btn, .cpopup-container .btn{
     padding: 5px 10px;
     background-color: var(--fg);
     color: white;
@@ -428,7 +428,7 @@
     margin-bottom: 20px;
   }
 
-  .btn, .logoutbtn{
+  .btn, .btn2, .logoutbtn{
     padding: 10px;
     background-color: var(--main-color);
     color: white;
@@ -444,8 +444,11 @@
   .logoutbtn {
     background-color: var(--main-color2);
   }
+.btn2{
+  background-color: rgba(41, 187, 41, 0.826);
+}
 
-  .btn:hover,
+  .btn:hover,.btn2:hover,
   .logoutbtn:hover {
     background-color: var(--main-color3);
   }
@@ -455,7 +458,6 @@
   margin-top: 20px;
   text-align: center;
   color: white;
-  margin-bottom: 350px;
 }
 
 .completed-tasks h3 {
@@ -466,7 +468,6 @@
 }
 
 .ctask-list {
-  display: none;
   padding-bottom: 15px;
   margin-bottom: 15px;
 }

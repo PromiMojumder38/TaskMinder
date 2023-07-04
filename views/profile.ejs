@@ -19,22 +19,11 @@
     <div class="left-side">
       <img src="logo_and_title-removebg.png">
       <button class="btn" id="add-task-button"><i class="fas fa-plus"></i></button>
+      <button class="btn2" id="complete-task-button"><i class="fas fa-tasks"></i></button>
       <form action="/logout" method="POST">
         <input type="hidden" name="token" value="<%= user.token %>">
         <button class="logoutbtn" id="logout-button"><i class="fas fa-sign-out-alt"></i></button>
       </form>
-      <section class="completed-tasks">
-        <h3 class="ctask-heading">Completed Tasks&nbsp<i class="fas fa-chevron-down"></i></h3>
-        <div class="ctask-list">
-          <% tasks.forEach(function(task) { %>
-            <% if (task.task_completed) { %>
-              <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete();">
-                <button type="submit" class="dropdown-item deletee"><i class="fas fa-trash-alt"></i></button>
-                <%= task.task_name %></form>
-            <% } %>
-          <% }) %>
-        </div>
-      </section>
     </div>
     
     <div class="middle-box">
@@ -169,6 +158,21 @@
       </form>
     </div>
   </div>
+  <div class="cpopup-container" id="c-task-popup" style="display: none;">
+    <div class="c-task-popup-content">
+      <h2>Completed Tasks</h2>
+      <div class="ctask-list">
+        <% tasks.forEach(function(task) { %>
+          <% if (task.task_completed) { %>
+            <form action="/tasks/delete/<%= task.task_id %>" method="POST" onsubmit="return confirmDelete();">
+              <button type="submit" class="dropdown-item deletee"><i class="fas fa-trash-alt"></i></button>
+              <%= task.task_name %></form>
+          <% } %>
+        <% }) %>
+      </div>
+      <button type="button" class="btn" id="c-task-button-popup" onclick="closePopUp()">OK</button>
+    </div>
+  </div>
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
@@ -201,7 +205,12 @@
           console.error(`Error updating task ${taskId}:`, error);
         });
     }
-  
+    const cbtn = document.getElementById('complete-task-button');
+    const cpopup = document.getElementById('c-task-popup');
+    cbtn.addEventListener('click', function() {
+      cpopup.style.display = 'block';
+    });
+
     const addButton = document.getElementById('add-task-button');
     const taskPopup = document.getElementById('task-popup');
     const addTaskButtonPopup = document.getElementById('add-task-button-popup');
@@ -313,10 +322,12 @@
       var taskPopup = document.getElementById('task-popup');
       var updateTaskPopup = document.getElementById('udtask-popup');
       var viewTaskPopup = document.getElementById('view-task-popup');
+      var ctaskPopup = document.getElementById('c-task-button-popup');
   
       taskPopup.style.display = 'none';
       updateTaskPopup.style.display = 'none';
       viewTaskPopup.style.display = 'none';
+      cpopup.style.display = 'none';
     }
   
     const taskHeadline = document.querySelectorAll('.th');
