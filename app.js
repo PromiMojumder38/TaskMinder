@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5002;
+const port = 5000;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -120,6 +120,12 @@ app.post('/login', (req, res) => {
 
       if (result) {
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '48h' });
+        const cookieOptions = {
+          expiresIn : new Date(Date.now() + 1*24*3600*1000),
+          httpOnly: true
+      }
+
+      res.cookie("user", token, cookieOptions);
         req.session.token = token;
         res.redirect('/profile');
       } else {
