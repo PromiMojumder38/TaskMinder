@@ -153,6 +153,7 @@
   .task-box:hover {
     transform: scale(1.05);
     transition: transform 0.3s;
+    box-shadow: 0 10px 14px rgba(98, 168, 247, 0.738);
   }
   div[role="progressbar"] {
     align-items: center;

@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const port = 5000;
+const port = 4003;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
